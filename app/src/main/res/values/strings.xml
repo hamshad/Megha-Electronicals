@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BuzzerTest</string>
+    <string name="channel_id">Buzzer</string>
+</resources>
