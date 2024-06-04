@@ -35,6 +35,14 @@ android {
 
 dependencies {
 
+    implementation libs.lottie
+    implementation libs.retrofit
+    implementation libs.converter.gson
+    implementation libs.adapter.rxjava3
+    implementation libs.rxandroid
+    implementation libs.rxjava
+    implementation libs.work.runtime
+
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
@@ -43,4 +51,5 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
 }

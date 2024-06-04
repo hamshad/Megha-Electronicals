@@ -1,5 +1,6 @@
 package com.example.buzzertest;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -17,6 +18,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -34,33 +37,41 @@ public class NotificationService extends FirebaseMessagingService {
         Map<String, String> data = message.getData();
         Log.d(TAG, "Title Background: " + data.get("title"));
         Log.d(TAG, "Body Background: " + data.get("body"));
+        Log.d(TAG, "Title Foreground: " + message.getNotification().getTitle());
+        Log.d(TAG, "Body Foreground: " + message.getNotification().getBody());
         Log.d(TAG, "Time: " + Calendar.getInstance().getTime());
 
-        try {
-            // Play vibration
-            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            vibrator.vibrate(VibrationEffect.createOneShot(5000, VibrationEffect.DEFAULT_AMPLITUDE));
+        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).build();
+        WorkManager.getInstance(this).enqueue(workRequest);
 
-            // Play ringtone
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-            Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
-            ringtone.play();
+//        try {
+//            // Play vibration
+//            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+//            vibrator.vibrate(VibrationEffect.createOneShot(5000, VibrationEffect.DEFAULT_AMPLITUDE));
+//
+//            // Play ringtone
+//            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+//            Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+//            ringtone.play();
+//
+//            // Stop ringtone after 10 seconds
+//            new Thread(() -> {
+//                try {
+//                    Thread.sleep(10000);
+//                    if (ringtone.isPlaying())
+//                        ringtone.stop();
+//                } catch (InterruptedException e) {
+//                    e.fillInStackTrace();
+//                }
+//            }).start();
+//        } catch (Exception e) {
+//            Log.d(TAG, "onMessageReceived: " + e);
+//        }
 
-            // Stop ringtone after 10 seconds
-            new Thread(() -> {
-                try {
-                    Thread.sleep(10000);
-                    if (ringtone.isPlaying())
-                        ringtone.stop();
-                } catch (InterruptedException e) {
-                    e.fillInStackTrace();
-                }
-            }).start();
-        } catch (Exception e) {
-            Log.d(TAG, "onMessageReceived: " + e);
-        }
-
-        sendNotification(data.get("title"), data.get("body"));
+        if (message.getNotification() == null)
+            sendNotification(data.get("title"), data.get("body"));
+        else
+            sendNotification(message.getNotification().getTitle(), message.getNotification().getBody());
     }
 
     private void sendNotification(String title, String messageBody) {
