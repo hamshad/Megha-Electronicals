@@ -1,4 +1,4 @@
-package com.example.buzzertest;
+package com.buzzertest;
 
 import org.junit.Test;
 

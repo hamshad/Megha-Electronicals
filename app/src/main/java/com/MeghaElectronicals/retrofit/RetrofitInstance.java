@@ -1,4 +1,4 @@
-package com.gmhmccms.Retrofit;
+package com.example.buzzertest.retrofit;
 
 import java.util.concurrent.TimeUnit;
 
@@ -9,12 +9,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitInstance {
 
-    public static final String BASE_URL = "http://cms.gurumishrihmc.edu.in/";
+//    public static final String BASE_URL = "http://cms.gurumishrihmc.edu.in/";
+    public static final String BASE_URL = "http://192.168.1.24:8040/";
 
-//    public static final String BASE_URL = "http://192.168.1.12:8025/";
     static Retrofit retrofit;
 
-    public static Service getService(boolean host) {
+    public static Service getService() {
         OkHttpClient.Builder client = new OkHttpClient.Builder()
                 .connectTimeout(100, TimeUnit.SECONDS)
                 .readTimeout(100, TimeUnit.SECONDS);

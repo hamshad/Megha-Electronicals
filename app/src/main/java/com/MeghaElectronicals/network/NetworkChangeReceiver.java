@@ -1,4 +1,4 @@
-package com.gmhmccms.views.Network;
+package com.example.buzzertest.network;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -11,8 +11,8 @@ import android.view.LayoutInflater;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.gmhmccms.R;
-import com.gmhmccms.databinding.InternetAlertdialogBinding;
+import com.example.buzzertest.R;
+import com.example.buzzertest.databinding.InternetAlertdialogBinding;
 
 public class NetworkChangeReceiver extends BroadcastReceiver {
 
@@ -42,7 +42,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         if (alertDialog == null) {
 
             AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.CustomAlertDialog);
-            com.gmhmccms.databinding.InternetAlertdialogBinding view = InternetAlertdialogBinding.inflate(LayoutInflater.from(context));
+            InternetAlertdialogBinding view = InternetAlertdialogBinding.inflate(LayoutInflater.from(context));
 
             dialog.setView(view.getRoot());
             alertDialog = dialog.create();

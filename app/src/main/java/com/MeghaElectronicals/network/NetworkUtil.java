@@ -1,4 +1,4 @@
-package com.gmhmccms.views.Network;
+package com.example.buzzertest.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
