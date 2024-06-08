@@ -1,4 +1,15 @@
 <resources>
-    <string name="app_name">BuzzerTest</string>
+    <string name="app_name">Megha Electricals</string>
     <string name="channel_id">Buzzer</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="select_start_date">Select Start Date and Time</string>
 </resources>
+
+    <!--
+    res/raw/entities.ent:
+
+    <!ENTITY appname "MyAppName">
+    <!ENTITY author "MrAuthor">
+-->

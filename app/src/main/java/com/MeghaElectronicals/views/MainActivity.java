@@ -1,30 +1,42 @@
-package com.example.buzzertest.views;
+package com.MeghaElectronicals.views;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.buzzertest.MySharedPreference;
-import com.example.buzzertest.R;
-import com.example.buzzertest.databinding.ActivityMainBinding;
-import com.example.buzzertest.network.NetworkUtil;
+import com.MeghaElectronicals.R;
+import com.MeghaElectronicals.adapter.TaskListAdapter;
+import com.MeghaElectronicals.common.MySharedPreference;
+import com.MeghaElectronicals.databinding.ActivityMainBinding;
+import com.MeghaElectronicals.modal.LoginModal;
+import com.MeghaElectronicals.network.NetworkUtil;
+import com.MeghaElectronicals.retrofit.ServiceRepository;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     ActivityMainBinding ui;
     private MySharedPreference pref;
+    private ServiceRepository repo;
+    private CompositeDisposable disposable = new CompositeDisposable();
 
 
     @Override
@@ -35,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
                     .setAction("RETRY", v -> recreate())
                     .show();
         }
+        getTaskLists();
     }
 
 
@@ -46,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(ui.getRoot());
 
         pref = new MySharedPreference(this);
+        repo = new ServiceRepository(this);
 
         // Manually Configuring Work Manager (not REQUIRED) and added WAKE_LOCK permission in manifest file
 //        WorkManager.initialize(this, new Configuration.Builder().build());
@@ -54,6 +68,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ui.mainDrawer.openDrawer(GravityCompat.START);
+            }
+        });
+
+        ui.mainDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+                TextView username = drawerView.findViewById(R.id.username);
+                String drawerText = new LoginModal(pref.fetchLogin()).FullName().split(" ")[0];
+                username.setText(drawerText);
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
             }
         });
 
@@ -72,5 +110,26 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void getTaskLists() {
+        disposable.add(
+                repo.getTasksListData()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(tasksListModals -> {
+                            Log.d(TAG, "getTaskLists: " + tasksListModals.toString());
+                            ui.taskListRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                            ui.taskListRecycler.setAdapter(new TaskListAdapter(tasksListModals, getApplicationContext()));
+                        }, throwable -> {
+                            Log.d(TAG, "getTaskLists: " + throwable.toString());
+                        })
+        );
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        disposable.clear();
     }
 }

@@ -1,4 +1,4 @@
-package com.example.buzzertest.network;
+package com.MeghaElectronicals.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

@@ -1,4 +1,4 @@
-package com.MeghaElectronicals;
+package com.MeghaElectronicals.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;

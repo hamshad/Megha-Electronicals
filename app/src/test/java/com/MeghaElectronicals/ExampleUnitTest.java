@@ -1,4 +1,4 @@
-package com.buzzertest;
+package com.MeghaElectronicals;
 
 import org.junit.Test;
 

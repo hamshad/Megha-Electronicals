@@ -2,20 +2,21 @@ package com.MeghaElectronicals.modal;
 
 //[
 //    {
-//        "TaskName": "task",
-//        "Description": "last one",
-//        "StartDate": "2024-06-07T05:21:00",
-//        "CompletionDate": null,
+//        "TaskName": "Name of a Task",
+//        "Description": "Description of the Task",
+//        "StartDate": "2024-06-08T05:34:00",
+//        "EndDate": "2024-06-08T08:34:00",
 //        "Status": "InProgress",
 //        "ColorsName": "RED",
 //        "EmployeName": "Santosh Pawar"
-//    },
+//    }
+//[
 
-public record TasksList(String TaskName,
-                        String Description,
-                        String StartDate,
-                        String CompletionDate,
-                        String Status,
-                        String ColorsName,
-                        String EmployeName) {
+public record TasksListModal(String TaskName,
+                             String Description,
+                             String StartDate,
+                             String EndDate,
+                             String Status,
+                             String ColorsName,
+                             String EmployeName) {
 }

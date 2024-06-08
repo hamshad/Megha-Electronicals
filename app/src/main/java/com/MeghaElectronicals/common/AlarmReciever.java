@@ -1,4 +1,4 @@
-package com.MeghaElectronicals;
+package com.MeghaElectronicals.common;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.MeghaElectronicals;
+package com.MeghaElectronicals.common;
 
 import android.annotation.SuppressLint;
 
@@ -60,8 +60,6 @@ public class MyFunctions {
     }
 
     public static String convertDate(String date) {
-        // Original date-time string
-        String originalDateTime = "2024-06-07T05:21:00";
 
         // Define the original and target date formats
         SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
@@ -70,7 +68,7 @@ public class MyFunctions {
 
         try {
             // Parse the original date-time string to a Date object
-            Date dateForFormatting = originalFormat.parse(originalDateTime);
+            Date dateForFormatting = originalFormat.parse(date);
 
             // Format the Date object to the desired format
 

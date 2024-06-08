@@ -1,16 +1,16 @@
-package com.example.buzzertest.retrofit;
+package com.MeghaElectronicals.retrofit;
 
-import com.example.buzzertest.modal.DepartmentModal;
-import com.example.buzzertest.modal.EmployeesListModal;
-import com.example.buzzertest.modal.LoginModal;
-import com.example.buzzertest.modal.StatusModal;
+import com.MeghaElectronicals.modal.DepartmentModal;
+import com.MeghaElectronicals.modal.EmployeesListModal;
+import com.MeghaElectronicals.modal.LoginModal;
+import com.MeghaElectronicals.modal.StatusModal;
+import com.MeghaElectronicals.modal.TasksListModal;
+import com.google.gson.JsonElement;
 
 import java.util.HashMap;
 import java.util.List;
 
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
@@ -30,4 +30,12 @@ public interface Service {
     @FormUrlEncoded
     @POST("api/User/EmployeesList")
     Single<List<EmployeesListModal>> getEmployeesList(@FieldMap HashMap<String, String> map);
+
+    @FormUrlEncoded
+    @POST("api/User/AddTasks")
+    Single<JsonElement> addTasks(@FieldMap HashMap<String, String> map);
+
+    @FormUrlEncoded
+    @POST("api/User/TasksList")
+    Single<List<TasksListModal>> getTasksList(@FieldMap HashMap<String, String> map);
 }

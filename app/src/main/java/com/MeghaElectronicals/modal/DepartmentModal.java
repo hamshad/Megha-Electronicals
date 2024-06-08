@@ -1,4 +1,4 @@
-package com.example.buzzertest.modal;
+package com.MeghaElectronicals.modal;
 
 //{
 //        "Name": "Development",

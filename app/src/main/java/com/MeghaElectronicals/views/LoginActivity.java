@@ -1,4 +1,4 @@
-package com.example.buzzertest.views;
+package com.MeghaElectronicals.views;
 
 import android.Manifest;
 import android.content.Context;
@@ -19,12 +19,12 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.buzzertest.MySharedPreference;
-import com.example.buzzertest.R;
-import com.example.buzzertest.databinding.ActivityLoginBinding;
-import com.example.buzzertest.modal.LoginModal;
-import com.example.buzzertest.network.NetworkUtil;
-import com.example.buzzertest.retrofit.ServiceRepository;
+import com.MeghaElectronicals.R;
+import com.MeghaElectronicals.common.MySharedPreference;
+import com.MeghaElectronicals.databinding.ActivityLoginBinding;
+import com.MeghaElectronicals.modal.LoginModal;
+import com.MeghaElectronicals.network.NetworkUtil;
+import com.MeghaElectronicals.retrofit.ServiceRepository;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONObject;
@@ -188,6 +188,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showDialog(String error) {
+
+        isDialogShown = true;
 
         ui.loginButtonProgress.setVisibility(View.GONE);
         ui.loginButton.setText(getString(R.string.login));

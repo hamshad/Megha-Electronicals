@@ -1,24 +1,26 @@
-package com.example.buzzertest.views;
+package com.MeghaElectronicals.views;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.buzzertest.R;
-import com.example.buzzertest.databinding.ActivityNewTaskBinding;
-import com.example.buzzertest.databinding.LoginAlertdialogBinding;
-import com.example.buzzertest.modal.DepartmentModal;
-import com.example.buzzertest.modal.EmployeesListModal;
-import com.example.buzzertest.modal.StatusModal;
-import com.example.buzzertest.network.NetworkUtil;
-import com.example.buzzertest.retrofit.ServiceRepository;
+import com.MeghaElectronicals.R;
+import com.MeghaElectronicals.databinding.ActivityNewTaskBinding;
+import com.MeghaElectronicals.databinding.LoginAlertdialogBinding;
+import com.MeghaElectronicals.modal.DepartmentModal;
+import com.MeghaElectronicals.modal.EmployeesListModal;
+import com.MeghaElectronicals.modal.StatusModal;
+import com.MeghaElectronicals.network.NetworkUtil;
+import com.MeghaElectronicals.retrofit.ServiceRepository;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONObject;
@@ -28,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -43,8 +46,7 @@ public class NewTaskActivity extends AppCompatActivity {
     ActivityNewTaskBinding ui;
     private boolean isDialogShown = false;
     private ServiceRepository repo;
-    private String StatusId = "", EmployeeId = "";
-    private Date startDate = null;
+    private String StatusId = "", AssignedToEmployeeId = "", DID = "";
     private final CompositeDisposable disposable = new CompositeDisposable();
 
 
@@ -73,18 +75,27 @@ public class NewTaskActivity extends AppCompatActivity {
             Date date = Calendar.getInstance().getTime();
             if (!isDialogShown) {
 
+                // DATE PICKER
                 @SuppressLint("SimpleDateFormat")
                 DatePickerDialog fromDatePicker = new DatePickerDialog(
                         NewTaskActivity.this,
                         (view, year, month, dayOfMonth) -> {
                             String fromDate = dayOfMonth + "-" + (month + 1) + "-" + year;
                             try {
-                                startDate = new SimpleDateFormat("dd-MM-yyyy").parse(fromDate);
-                                String startDateText = new SimpleDateFormat("dd-MMM-yyyy").format(startDate);
+                                Date startDate = new SimpleDateFormat("dd-MM-yyyy").parse(fromDate);
+                                String startDateText = new SimpleDateFormat("dd-MM-yyyy").format(startDate);
                                 ui.startDateButton.setText(startDateText);
                             } catch (ParseException e) {
                                 e.fillInStackTrace();
                             }
+
+                            // TIME PICKER
+                            TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                                    (view1, hourOfDay, minute) -> ui.startDateButton.append(" " + String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute)),
+                                    Integer.parseInt(new SimpleDateFormat("hh").format(date)),
+                                    Integer.parseInt(new SimpleDateFormat("mm").format(date)),
+                                    false);
+                            timePickerDialog.show();
                         },
                         Integer.parseInt(new SimpleDateFormat("yyyy").format(date)),
                         Integer.parseInt(new SimpleDateFormat("MM").format(date)) - 1,
@@ -123,8 +134,12 @@ public class NewTaskActivity extends AppCompatActivity {
                 showDialog("Select Status!");
                 return;
             }
-            if (ui.startDateButton.getText() == getString(R.string.select_start_date) || startDate == null) {
-                showDialog("Select Start Date!");
+            if (ui.startDateButton.getText() == getString(R.string.select_start_date)) {
+                showDialog("Select Start Date and Time!");
+                return;
+            }
+            if (!ui.startDateButton.getText().toString().contains(":")) {
+                showDialog("Select Start Time!");
                 return;
             }
 
@@ -138,11 +153,15 @@ public class NewTaskActivity extends AppCompatActivity {
                     [Create Task]:
                     Task: %s,
                     Description: %s,
+                    StartDate: %s,
                     Department: %s,
                     Employee: %s,
                     Status: %s,
                     AssignedToId: %s,
-                    StatusId: %s.""", TaskName, Description, department, employees, status, EmployeeId, StatusId));
+                    DID: %s,
+                    StatusId: %s.""", TaskName, Description, ui.startDateButton.getText(), department, employees, status, AssignedToEmployeeId, DID, StatusId));
+
+            addTask(TaskName, Description, ui.startDateButton.getText().toString().concat(":00"), AssignedToEmployeeId, StatusId, DID);
         });
     }
 
@@ -169,6 +188,7 @@ public class NewTaskActivity extends AppCompatActivity {
     }
 
     private void getEmployeesList(DepartmentModal modal) {
+        DID = modal.DID();
         disposable.add(
                 repo.getEmployeesListData(modal.DID())
                         .subscribeOn(Schedulers.io())
@@ -178,7 +198,23 @@ public class NewTaskActivity extends AppCompatActivity {
                                     Log.d(TAG, "Employees: " + employeesListModals.toString());
                                     ui.employees.setAdapter(new ArrayAdapter<>(getApplicationContext(), R.layout.my_autocomplete_spinner, employeesListModals.stream().map(EmployeesListModal::Name).collect(Collectors.toList())));
                                     ui.employees.setThreshold(50);
-                                    ui.employees.setOnItemClickListener((parent, view, position, id) -> EmployeeId = employeesListModals.get(position).EmpId());
+                                    ui.employees.setOnItemClickListener((parent, view, position, id) -> AssignedToEmployeeId = employeesListModals.get(position).EmpId());
+                                },
+                                this::showError
+                        )
+        );
+    }
+
+    private void addTask(String TaskName, String Description, String StartDate, String AssignedToId, String StatusId, String DID) {
+        disposable.add(
+                repo.addTask(TaskName, Description, StartDate, AssignedToId, StatusId, DID)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                jsonElement -> {
+                                    Log.d(TAG, "addTask: " + jsonElement.toString());
+                                    Toast.makeText(this, "New Task Created Successfully", Toast.LENGTH_SHORT).show();
+                                    finish();
                                 },
                                 this::showError
                         )

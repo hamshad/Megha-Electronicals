@@ -1,9 +1,42 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.BuzzerTest" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.BuzzerTest" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorAccent">@color/secondary</item>
+        <item name="colorSurfaceContainer">@color/backgroundSecondary</item>
+        <item name="colorControlActivated">@color/backgroundSecondary</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:textViewStyle">@style/MyTextView</item>
+    </style>
+
+    <!-- TextView Style -->
+    <style name="MyTextView" parent="Widget.AppCompat.TextView">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/raleway</item>
+    </style>
+
+    <style name="NavigationMenuTextView" parent="Widget.AppCompat.TextView">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/raleway_semibold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/dialog_round_corners</item>
+    </style>
+
+    <style name="AlertDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/alertdialog_enter_anim</item>
+        <item name="android:windowExitAnimation">@anim/alertdialog_exit_anim</item>
     </style>
 
     <style name="Theme.BuzzerTest" parent="Base.Theme.BuzzerTest" />
+
+    <style name="Theme.BuzzerTest.Splash" parent="Theme.BuzzerTest">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

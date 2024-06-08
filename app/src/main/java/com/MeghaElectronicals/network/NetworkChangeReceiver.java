@@ -1,4 +1,4 @@
-package com.example.buzzertest.network;
+package com.MeghaElectronicals.network;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -11,8 +11,8 @@ import android.view.LayoutInflater;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.example.buzzertest.R;
-import com.example.buzzertest.databinding.InternetAlertdialogBinding;
+import com.MeghaElectronicals.R;
+import com.MeghaElectronicals.databinding.InternetAlertdialogBinding;
 
 public class NetworkChangeReceiver extends BroadcastReceiver {
 

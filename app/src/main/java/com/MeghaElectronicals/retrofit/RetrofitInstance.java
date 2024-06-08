@@ -1,4 +1,4 @@
-package com.example.buzzertest.retrofit;
+package com.MeghaElectronicals.retrofit;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,8 +16,9 @@ public class RetrofitInstance {
 
     public static Service getService() {
         OkHttpClient.Builder client = new OkHttpClient.Builder()
-                .connectTimeout(100, TimeUnit.SECONDS)
-                .readTimeout(100, TimeUnit.SECONDS);
+                .connectTimeout(1000, TimeUnit.SECONDS)
+                .readTimeout(1000, TimeUnit.SECONDS)
+                .writeTimeout(1000, TimeUnit.SECONDS);
 
 //        String URL = host ? LOCAL_HOST : BASE_URL;
 
