@@ -1,7 +1,9 @@
-package com.example.buzzertest;
+package com.MeghaElectronicals;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.MeghaElectronicals.R;
 
 public class MySharedPreference {
 

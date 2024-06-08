@@ -1,4 +1,4 @@
-package com.example.buzzertest;
+package com.MeghaElectronicals;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,7 +17,8 @@ import androidx.core.content.ContextCompat;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import com.example.buzzertest.views.MainActivity;
+import com.MeghaElectronicals.views.MainActivity;
+import com.MeghaElectronicals.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

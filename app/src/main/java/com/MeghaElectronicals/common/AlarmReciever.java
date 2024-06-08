@@ -1,4 +1,4 @@
-package com.example.buzzertest;
+package com.MeghaElectronicals;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

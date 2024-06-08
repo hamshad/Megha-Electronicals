@@ -1,4 +1,4 @@
-package com.example.buzzertest;
+package com.MeghaElectronicals;
 
 import android.app.Application;
 import android.content.Intent;
@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.buzzertest.views.MainActivity;
+import com.MeghaElectronicals.views.MainActivity;
 
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 

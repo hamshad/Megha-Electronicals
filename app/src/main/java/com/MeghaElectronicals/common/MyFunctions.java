@@ -1,4 +1,4 @@
-package com.example.buzzertest;
+package com.MeghaElectronicals;
 
 import android.annotation.SuppressLint;
 
@@ -11,6 +11,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Optional;
 
 public class MyFunctions {
 
@@ -51,5 +53,31 @@ public class MyFunctions {
             return new SimpleDateFormat("dd-MMM-yyyy").format(date);
         }
         return new SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+
+    public static String nullCheck(String str) {
+        return Optional.ofNullable(str).map(s -> s.trim().isEmpty()).orElse(true) ? "-" : str;
+    }
+
+    public static String convertDate(String date) {
+        // Original date-time string
+        String originalDateTime = "2024-06-07T05:21:00";
+
+        // Define the original and target date formats
+        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+        SimpleDateFormat targetFormat = new SimpleDateFormat("dd-MM-yyyy\nhh:mm a", Locale.getDefault());
+//        SimpleDateFormat targetFormat = new SimpleDateFormat("dd-MM-yyyy, hh:mm a", Locale.getDefault());
+
+        try {
+            // Parse the original date-time string to a Date object
+            Date dateForFormatting = originalFormat.parse(originalDateTime);
+
+            // Format the Date object to the desired format
+
+            return targetFormat.format(dateForFormatting);
+        } catch (ParseException e) {
+            e.fillInStackTrace();
+            return date;
+        }
     }
 }
