@@ -10,15 +10,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitInstance {
 
 //    public static final String BASE_URL = "http://cms.gurumishrihmc.edu.in/";
-    public static final String BASE_URL = "http://192.168.1.24:8040/";
+    public static final String BASE_URL = "http://192.168.1.9:8040/";
 
     static Retrofit retrofit;
 
     public static Service getService() {
         OkHttpClient.Builder client = new OkHttpClient.Builder()
-                .connectTimeout(1000, TimeUnit.SECONDS)
                 .readTimeout(1000, TimeUnit.SECONDS)
-                .writeTimeout(1000, TimeUnit.SECONDS);
+                .writeTimeout(1000, TimeUnit.SECONDS)
+                .connectTimeout(1000, TimeUnit.SECONDS);
 
 //        String URL = host ? LOCAL_HOST : BASE_URL;
 

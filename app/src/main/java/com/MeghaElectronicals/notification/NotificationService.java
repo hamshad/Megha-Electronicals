@@ -1,5 +1,6 @@
 package com.MeghaElectronicals.notification;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,6 +17,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.MeghaElectronicals.R;
+import com.MeghaElectronicals.alarm.AlarmReceiver;
 import com.MeghaElectronicals.views.MainActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -34,12 +36,21 @@ public class NotificationService extends FirebaseMessagingService {
         Log.d(TAG, "Title Background: " + data.get("title"));
         Log.d(TAG, "Body Background: " + data.get("body"));
         Log.d(TAG, "Time: " + Calendar.getInstance().getTime());
-//
+
+//        [WORK MANAGER]
 //        Data.Builder dataBuild = new Data.Builder();
 //        dataBuild.putString("title", data.get("title"));
 //
 //        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInputData(dataBuild.build()).build();
 //        WorkManager.getInstance(this).enqueue(workRequest);
+
+//        [ALARM MANGER]
+        Intent intentAlarmReceiver = new Intent(this, AlarmReceiver.class);
+        intentAlarmReceiver.putExtra("task", data.get("title"));
+        intentAlarmReceiver.putExtra("desc", data.get("body"));
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intentAlarmReceiver, PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager manager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000, pendingIntent);
 
         sendNotification(data.get("title"), data.get("body"));
     }
@@ -75,7 +86,7 @@ public class NotificationService extends FirebaseMessagingService {
                 NotificationManager.IMPORTANCE_HIGH
         );
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-        channel.setSound(customSoundUri, new AudioAttributes.Builder()
+        channel.setSound(defaultSoundUri, new AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
                 .build());
@@ -91,10 +102,5 @@ public class NotificationService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         Log.d(TAG, "onNewToken: " + token);
-    }
-
-    public NotificationService() {
-        super();
-        Log.d(TAG, "NotificationService: function");
     }
 }

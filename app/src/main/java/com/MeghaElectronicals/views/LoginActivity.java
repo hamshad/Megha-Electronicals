@@ -4,14 +4,17 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -55,11 +58,26 @@ public class LoginActivity extends AppCompatActivity {
         }
     });
 
+    private final ActivityResultLauncher<Intent> requestOverlayPermission = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult o) {
+                Log.d(TAG, "OVERLAY PERMISSION: "+Settings.canDrawOverlays(getApplicationContext()));
+//            } else {
+//                Log.d(TAG, "OVERLAY PERMISSION: NO");
+//            }
+        }
+    });
+
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onStart() {
         super.onStart();
         requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        if (!Settings.canDrawOverlays(this)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            requestOverlayPermission.launch(intent);
+        }
     }
 
     @Override
