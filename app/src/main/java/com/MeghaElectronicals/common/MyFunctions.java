@@ -1,6 +1,7 @@
 package com.MeghaElectronicals.common;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -78,4 +79,11 @@ public class MyFunctions {
             return date;
         }
     }
+
+    public static boolean isInForeground () {
+        ActivityManager.RunningAppProcessInfo appProcessInfo = new ActivityManager.RunningAppProcessInfo();
+        ActivityManager.getMyMemoryState(appProcessInfo);
+        return (appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND || appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE);
+    }
+
 }

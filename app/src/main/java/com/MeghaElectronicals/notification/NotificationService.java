@@ -1,6 +1,5 @@
 package com.MeghaElectronicals.notification;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,15 +9,20 @@ import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.MeghaElectronicals.R;
-import com.MeghaElectronicals.alarm.AlarmReceiver;
-import com.MeghaElectronicals.views.MainActivity;
+import com.MeghaElectronicals.alarm.MyMediaPlayer;
+import com.MeghaElectronicals.common.MyFunctions;
+import com.MeghaElectronicals.common.MySharedPreference;
+import com.MeghaElectronicals.views.StopAlarmActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -37,33 +41,35 @@ public class NotificationService extends FirebaseMessagingService {
         Log.d(TAG, "Body Background: " + data.get("body"));
         Log.d(TAG, "Time: " + Calendar.getInstance().getTime());
 
-//        [WORK MANAGER]
-//        Data.Builder dataBuild = new Data.Builder();
-//        dataBuild.putString("title", data.get("title"));
-//
-//        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInputData(dataBuild.build()).build();
-//        WorkManager.getInstance(this).enqueue(workRequest);
+        new MySharedPreference(this).saveNotificationData(data.get("title"), data.get("body"));
 
-//        [ALARM MANGER]
-        Intent intentAlarmReceiver = new Intent(this, AlarmReceiver.class);
-        intentAlarmReceiver.putExtra("task", data.get("title"));
-        intentAlarmReceiver.putExtra("desc", data.get("body"));
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intentAlarmReceiver, PendingIntent.FLAG_IMMUTABLE);
-        AlarmManager manager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000, pendingIntent);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+
+//            [WORK MANAGER]
+//            Data.Builder dataBuild = new Data.Builder();
+//            dataBuild.putString("title", data.get("title"));
+//            dataBuild.putString("body", data.get("body"));
+
+            OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).build();
+            WorkManager.getInstance(this).enqueue(workRequest);
+        } else {
+            MyMediaPlayer.startPlayer(this);
+            if (MyFunctions.isInForeground()) {
+                startActivity(new Intent(this, StopAlarmActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            }
+        }
         sendNotification(data.get("title"), data.get("body"));
     }
 
     private void sendNotification(String title, String messageBody) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent intent = new Intent(this, StopAlarmActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_IMMUTABLE);
 
         String channelId = getString(R.string.channel_id);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        Uri customSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
                 .setColor(ContextCompat.getColor(this, R.color.blue))
@@ -92,10 +98,17 @@ public class NotificationService extends FirebaseMessagingService {
                 .build());
         channel.enableVibration(true);
         channel.setVibrationPattern(new long[]{0, 500, 1000});
+        channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
 
         notificationManager.createNotificationChannel(channel);
 
         notificationManager.notify(0, notificationBuilder.build());
+    }
+
+    @Override
+    public boolean handleIntentOnMainThread(Intent intent) {
+        Log.d(TAG, "handleIntentOnMainThread: ");
+        return super.handleIntentOnMainThread(intent);
     }
 
     @Override

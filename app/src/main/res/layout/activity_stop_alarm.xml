@@ -8,14 +8,14 @@
     tools:context=".views.StopAlarmActivity">
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/taskStopAlarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/raleway_bold"
         android:text="TASK: "
         android:textColor="@color/primary"
         android:textSize="36sp"
-        app:layout_constraintBottom_toTopOf="@+id/taskStopAlarm"
+        app:layout_constraintBottom_toTopOf="@+id/descStopAlarm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,7 +23,7 @@
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/taskStopAlarm"
+        android:id="@+id/descStopAlarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/raleway_medium"
@@ -34,7 +34,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/taskStopAlarm" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView2"
@@ -76,7 +76,7 @@
         android:fontFamily="@font/raleway_semibold"
         android:text="Stop Alarm"
         android:textColor="@color/white"
-        android:textSize="30sp"
+        android:textSize="16sp"
         android:textAllCaps="true"
         app:layout_constraintEnd_toEndOf="@+id/cardView2"
         app:layout_constraintStart_toStartOf="@+id/cardView2"

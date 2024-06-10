@@ -3,6 +3,7 @@ package com.MeghaElectronicals.views;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -21,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.MeghaElectronicals.R;
 import com.MeghaElectronicals.common.MySharedPreference;
@@ -61,10 +63,7 @@ public class LoginActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> requestOverlayPermission = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult o) {
-                Log.d(TAG, "OVERLAY PERMISSION: "+Settings.canDrawOverlays(getApplicationContext()));
-//            } else {
-//                Log.d(TAG, "OVERLAY PERMISSION: NO");
-//            }
+            Log.d(TAG, "OVERLAY PERMISSION: "+Settings.canDrawOverlays(getApplicationContext()));
         }
     });
 
@@ -72,7 +71,9 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
         if (!Settings.canDrawOverlays(this)) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));

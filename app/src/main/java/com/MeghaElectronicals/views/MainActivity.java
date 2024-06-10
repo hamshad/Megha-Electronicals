@@ -1,9 +1,7 @@
 package com.MeghaElectronicals.views;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,7 +9,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -22,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.MeghaElectronicals.R;
 import com.MeghaElectronicals.adapter.TaskListAdapter;
-import com.MeghaElectronicals.alarm.AlarmReceiver;
 import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.databinding.ActivityMainBinding;
 import com.MeghaElectronicals.modal.LoginModal;
@@ -63,15 +59,14 @@ public class MainActivity extends AppCompatActivity {
         ui = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(ui.getRoot());
 
+        Log.d(TAG, "MOBILE SDK: "+ Build.VERSION.SDK_INT);
+        Log.d(TAG, "APP SDK: "+ 27);
+
         pref = new MySharedPreference(this);
         repo = new ServiceRepository(this);
 
         // Manually Configuring Work Manager (not REQUIRED) and added WAKE_LOCK permission in manifest file
 //        WorkManager.initialize(this, new Configuration.Builder().build());
-
-
-        //TODO: REMOVE THE ALARM
-        setAlarm();
 
         ui.drawerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,16 +114,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-    }
-
-    private void setAlarm() {
-        Intent intentAlarmReceiver = new Intent(this, AlarmReceiver.class);
-        intentAlarmReceiver.putExtra("task", "TASK NAME");
-        intentAlarmReceiver.putExtra("desc", "TASK DESCRIPTION");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intentAlarmReceiver, PendingIntent.FLAG_IMMUTABLE);
-        AlarmManager manager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, pendingIntent);
-        Toast.makeText(this, "ALARM SET", Toast.LENGTH_SHORT).show();
     }
 
     private void getTaskLists() {

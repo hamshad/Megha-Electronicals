@@ -7,14 +7,12 @@ import com.MeghaElectronicals.R;
 
 public class MySharedPreference {
 
-    private Context context;
     private final String appName;
     private final SharedPreferences pref;
     private final SharedPreferences.Editor edit;
 
     // Constructor
     public MySharedPreference(Context context) {
-        this.context = context;
         appName = context.getResources().getString(R.string.app_name);
         pref = context.getSharedPreferences(appName, Context.MODE_PRIVATE);
         edit = pref.edit();
@@ -47,6 +45,27 @@ public class MySharedPreference {
 
     public void deleteLogin() {
         edit.remove("Login");
+        edit.apply();
+    }
+
+    // Notification Data
+    public void saveNotificationData(String title, String body) {
+        edit.putString("NotificationTitle", title);
+        edit.putString("NotificationBody", body);
+        edit.apply();
+    }
+
+    public String fetchNotificationTitle() {
+        return pref.getString("NotificationTitle", "Task Name");
+    }
+
+    public String fetchNotificationBody() {
+        return pref.getString("NotificationBody", "Task Description");
+    }
+
+    public void deleteNotificationData() {
+        edit.remove("NotificationTitle");
+        edit.remove("NotificationBody");
         edit.apply();
     }
 }
