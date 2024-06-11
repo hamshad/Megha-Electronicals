@@ -20,12 +20,14 @@ import androidx.work.WorkManager;
 
 import com.MeghaElectronicals.R;
 import com.MeghaElectronicals.alarm.MyMediaPlayer;
+import com.MeghaElectronicals.alarm.SetAlarm;
 import com.MeghaElectronicals.common.MyFunctions;
 import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.views.StopAlarmActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -39,10 +41,18 @@ public class NotificationService extends FirebaseMessagingService {
         Map<String, String> data = message.getData();
         Log.d(TAG, "Title Background: " + data.get("title"));
         Log.d(TAG, "Body Background: " + data.get("body"));
+        Log.d(TAG, "StartDate: " + data.get("StartDate"));
+        Log.d(TAG, "EndDate: " + data.get("EndDate"));
+        Log.d(TAG, "TaskId: " + data.get("TaskId"));
         Log.d(TAG, "Time: " + Calendar.getInstance().getTime());
 
         new MySharedPreference(this).saveNotificationData(data.get("title"), data.get("body"));
 
+        try {
+            new SetAlarm().setAlarm(this, data.get("title"), data.get("body"), data.get("StartDate"));
+        } catch (ParseException e) {
+            e.fillInStackTrace();
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 
@@ -58,8 +68,8 @@ public class NotificationService extends FirebaseMessagingService {
             if (MyFunctions.isInForeground()) {
                 startActivity(new Intent(this, StopAlarmActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
+            sendNotification(data.get("title"), data.get("body"));
         }
-        sendNotification(data.get("title"), data.get("body"));
     }
 
     private void sendNotification(String title, String messageBody) {

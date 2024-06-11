@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -14,17 +15,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.MeghaElectronicals.databinding.TaskListItemBinding;
 import com.MeghaElectronicals.modal.TasksListModal;
+import com.MeghaElectronicals.views.MainActivity;
 
 import java.util.List;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskListViewHolder> {
 
     private List<TasksListModal> tasksList;
-    private Context context;
+    private final Context context;
+    private final MainActivity activity;
 
-    public TaskListAdapter(List<TasksListModal> tasksList, Context context) {
+    public TaskListAdapter(List<TasksListModal> tasksList, MainActivity mainActivity) {
         this.tasksList = tasksList;
-        this.context = context;
+        this.context = mainActivity.getApplicationContext();
+        this.activity = mainActivity;
     }
 
     @NonNull
@@ -45,6 +49,15 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         h.ui.endDate.setText(convertDate(nullCheck(modal.EndDate())));
 
         setColor(h.ui, modal.ColorsName());
+
+        h.ui.getRoot().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activity.openBottomSheet();
+//                UpdateTaskDialogFragment updateTaskDialog = UpdateTaskDialogFragment.newInstance();
+//                updateTaskDialog.show(activity.getSupportFragmentManager(), "UpdateTaskDialogFragment");
+            }
+        });
 
 //        try {
 //            float progress = getProgress(modal);

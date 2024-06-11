@@ -22,6 +22,8 @@ public class StopAlarmActivity extends AppCompatActivity {
         ui = ActivityStopAlarmBinding.inflate(getLayoutInflater());
         setContentView(ui.getRoot());
 
+        MyMediaPlayer.runWakeLock(this);
+
         pref = new MySharedPreference(this);
         String task = pref.fetchNotificationTitle();
         String desc = pref.fetchNotificationBody();

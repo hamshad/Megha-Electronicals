@@ -38,4 +38,8 @@ public interface Service {
     @FormUrlEncoded
     @POST("api/User/TasksList")
     Single<List<TasksListModal>> getTasksList(@FieldMap HashMap<String, String> map);
+
+    @FormUrlEncoded
+    @POST("api/User/Logoff")
+    Single<JsonElement> logOff(@FieldMap HashMap<String, String> map);
 }

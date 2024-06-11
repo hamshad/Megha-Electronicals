@@ -57,14 +57,14 @@ public class SplashScreenActivity extends AppCompatActivity {
         }));
 
         char[] app_name = getResources().getString(R.string.app_name).toCharArray();
-        int DELAY_ANIMATION = 300;
+        int DELAY_ANIMATION = 200;
         Handler handler = new Handler(Looper.getMainLooper());
 
         for (char c : app_name) {
-            DELAY_ANIMATION += 100;
+            DELAY_ANIMATION += 60;
             handler.postDelayed(() -> ui.appNameSplash.append(String.valueOf(c)), DELAY_ANIMATION);
         }
-        DELAY_ANIMATION += 300;
+        DELAY_ANIMATION += 200;
         handler.postDelayed(() -> {
             Intent intent = new Intent(this, pref.fetchLogin().isEmpty() ? LoginActivity.class : MainActivity.class);
             startActivity(intent);

@@ -95,6 +95,13 @@ public class NewTaskActivity extends AppCompatActivity {
                                     Integer.parseInt(new SimpleDateFormat("hh").format(date)),
                                     Integer.parseInt(new SimpleDateFormat("mm").format(date)),
                                     false);
+
+                            // Set the initial AM/PM value
+                            if (new SimpleDateFormat("a", Locale.getDefault()).format(date).equals("AM")) {
+                                timePickerDialog.updateTime(Integer.parseInt(new SimpleDateFormat("hh").format(date)), Integer.parseInt(new SimpleDateFormat("mm").format(date)));
+                            } else {
+                                timePickerDialog.updateTime(Integer.parseInt(new SimpleDateFormat("hh").format(date)) + 12, Integer.parseInt(new SimpleDateFormat("mm").format(date)));
+                            }
                             timePickerDialog.show();
                         },
                         Integer.parseInt(new SimpleDateFormat("yyyy").format(date)),

@@ -86,4 +86,13 @@ public class ServiceRepository {
 
         return service.getTasksList(formData);
     }
+
+    public Single<JsonElement> logOff() {
+        HashMap<String, String> formData = new HashMap<>();
+        formData.put("EmpId", userData.EmpId());
+
+        formData.forEach((s, s2) -> Log.d(TAG, s+": "+s2));
+
+        return service.logOff(formData);
+    }
 }

@@ -1,18 +1,23 @@
 package com.MeghaElectronicals.notification;
 
-import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.MeghaElectronicals.R;
-import com.MeghaElectronicals.alarm.AlarmReceiver;
 import com.MeghaElectronicals.alarm.MyMediaPlayer;
 import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.views.StopAlarmActivity;
@@ -42,26 +47,55 @@ public class NotificationWorker extends Worker {
 
         MyMediaPlayer.startPlayer(context);
 
+        sendNotification(pref.fetchNotificationTitle(), pref.fetchNotificationBody());
+
         Intent intent = new Intent(context, StopAlarmActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
 
         return Result.success();
     }
 
+    private void sendNotification(String title, String messageBody) {
+        Intent intent = new Intent(context, StopAlarmActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
+                PendingIntent.FLAG_IMMUTABLE);
 
-    private void setAlarm() {
-        Intent intentAlarmReceiver = new Intent(context, AlarmReceiver.class);
-        intentAlarmReceiver.putExtra("task", pref.fetchNotificationTitle());
-        intentAlarmReceiver.putExtra("desc", pref.fetchNotificationBody());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intentAlarmReceiver, PendingIntent.FLAG_IMMUTABLE);
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        String channelId = context.getString(R.string.channel_id);
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        // seconds: 1000 * [desired second]
-        // minutes: 1000 * 60 * [desired min]
-        // hours: 1000 * 60 * 60 * [desired hours]
-        // days: 1000 * 60 * 60 * 24 * [desired days]
-        manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000 * 60 * 20, pendingIntent);
-        Toast.makeText(context, "ALARM SET", Toast.LENGTH_SHORT).show();
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
+                .setColor(ContextCompat.getColor(context, R.color.blue))
+                .setSmallIcon(R.drawable.ic_bell)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setContentTitle(title)
+                .setContentText(messageBody)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setVibrate(new long[]{0, 500, 1000})
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Create notification channel
+        NotificationChannel channel = new NotificationChannel(
+                channelId,
+                context.getString(R.string.app_name),
+                NotificationManager.IMPORTANCE_HIGH
+        );
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        channel.setSound(defaultSoundUri, new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                .build());
+        channel.enableVibration(true);
+        channel.setVibrationPattern(new long[]{0, 500, 1000});
+        channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+
+        notificationManager.createNotificationChannel(channel);
+
+        notificationManager.notify(0, notificationBuilder.build());
     }
 }

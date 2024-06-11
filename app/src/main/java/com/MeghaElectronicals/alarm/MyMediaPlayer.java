@@ -19,7 +19,7 @@ public class MyMediaPlayer {
             powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
             wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MeghaElectronicals:WakeLock");
         }
-        wakeLock.acquire(5*60*1000L /*5 minutes*/);
+        wakeLock.acquire(5 * 60 * 1000L /*5 minutes*/);
     }
 
     public static void startPlayer(Context context) {
@@ -27,14 +27,12 @@ public class MyMediaPlayer {
             player = MediaPlayer.create(context, R.raw.alarm_clock_old);
         }
         player.setAudioAttributes(new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
                 .build());
         player.setVolume(1.0f, 1.0f);
         player.setLooping(true);
         player.start();
-
-        runWakeLock(context);
     }
 
     public static void stopPlayer(Context context) {

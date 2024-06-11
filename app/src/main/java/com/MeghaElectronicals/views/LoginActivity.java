@@ -1,10 +1,18 @@
 package com.MeghaElectronicals.views;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.graphics.RenderEffect;
+import android.graphics.Shader;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventCallback;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResult;
@@ -25,6 +34,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.MeghaElectronicals.R;
+import com.MeghaElectronicals.alarm.AlarmReceiver;
 import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.databinding.ActivityLoginBinding;
 import com.MeghaElectronicals.modal.LoginModal;
@@ -51,6 +61,9 @@ public class LoginActivity extends AppCompatActivity {
     private ServiceRepository repo;
     private final CompositeDisposable disposable = new CompositeDisposable();
     private MySharedPreference pref;
+    private SensorManager sensorManager;
+    private Sensor sensor;
+    private SensorEventCallback sensorEventCallback;
 
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
@@ -89,6 +102,10 @@ public class LoginActivity extends AppCompatActivity {
                     .setAction("RETRY", v -> recreate())
                     .show();
         }
+
+        makeSensorAnimation();
+
+        setAlarm(this, "TASK", "DESCRIPTION");
     }
 
     @Override
@@ -99,6 +116,10 @@ public class LoginActivity extends AppCompatActivity {
 
         pref = new MySharedPreference(this);
         repo = new ServiceRepository(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ui.loginBackgroundImage.setRenderEffect(RenderEffect.createBlurEffect(50f, 50f, Shader.TileMode.REPEAT));
+        }
 
         rootView = getWindow().getDecorView().getRootView();
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
@@ -127,6 +148,38 @@ public class LoginActivity extends AppCompatActivity {
 
         ui.loginButton.setOnClickListener(this::onLoginButtonClicked);
 
+    }
+
+    private void makeSensorAnimation() {
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorEventCallback = new SensorEventCallback() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                super.onSensorChanged(event);
+                float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];
+                System.out.println("X: " + x + " Y: " + y + " Z: " + z);
+
+                ui.loginCard.setRotationX(y);
+                ui.loginCard.setRotationY(x);
+            }
+        };
+        sensorManager.registerListener(sensorEventCallback, sensor, SensorManager.SENSOR_DELAY_GAME);
+        ui.stopAnimRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d(TAG, "onCheckedChanged: "+isChecked);
+                if (isChecked) {
+                    sensorManager.unregisterListener(sensorEventCallback);
+                    ui.loginCard.setRotationX(0);
+                    ui.loginCard.setRotationY(0);
+                } else {
+                    sensorManager.registerListener(sensorEventCallback, sensor, SensorManager.SENSOR_DELAY_GAME);
+                }
+            }
+        });
     }
 
     private void onLoginButtonClicked(View view) {
@@ -232,8 +285,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(sensorEventCallback);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         disposable.clear();
+        sensorManager.unregisterListener(sensorEventCallback);
+    }
+
+
+    public void setAlarm(Context context, String task, String desc) {
+        Intent intentAlarmReceiver = new Intent(context, AlarmReceiver.class);
+        intentAlarmReceiver.putExtra("task", task);
+        intentAlarmReceiver.putExtra("desc", desc);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intentAlarmReceiver, PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+
+        manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 3000, pendingIntent);
     }
 }
