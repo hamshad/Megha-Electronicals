@@ -23,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -76,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> requestOverlayPermission = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult o) {
-            Log.d(TAG, "OVERLAY PERMISSION: "+Settings.canDrawOverlays(getApplicationContext()));
+            Log.d(TAG, "OVERLAY PERMISSION: " + Settings.canDrawOverlays(getApplicationContext()));
         }
     });
 
@@ -103,9 +104,8 @@ public class LoginActivity extends AppCompatActivity {
                     .show();
         }
 
-        makeSensorAnimation();
-
-        setAlarm(this, "TASK", "DESCRIPTION");
+        if (!ui.stopAnimRadio.isChecked())
+            makeSensorAnimation();
     }
 
     @Override
@@ -148,6 +148,17 @@ public class LoginActivity extends AppCompatActivity {
 
         ui.loginButton.setOnClickListener(this::onLoginButtonClicked);
 
+
+
+        // TODO: REMOVE TEMPORARY ALARM
+        ui.loginButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                setAlarm(LoginActivity.this, "TASK", "DESCRIPTION");
+                return false;
+            }
+        });
+
     }
 
     private void makeSensorAnimation() {
@@ -162,15 +173,15 @@ public class LoginActivity extends AppCompatActivity {
                 float z = event.values[2];
                 System.out.println("X: " + x + " Y: " + y + " Z: " + z);
 
-                ui.loginCard.setRotationX(y);
-                ui.loginCard.setRotationY(x);
+                ui.loginCard.setRotationX(y * 3);
+                ui.loginCard.setRotationY(x * 3);
             }
         };
         sensorManager.registerListener(sensorEventCallback, sensor, SensorManager.SENSOR_DELAY_GAME);
         ui.stopAnimRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d(TAG, "onCheckedChanged: "+isChecked);
+                Log.d(TAG, "onCheckedChanged: " + isChecked);
                 if (isChecked) {
                     sensorManager.unregisterListener(sensorEventCallback);
                     ui.loginCard.setRotationX(0);
@@ -232,11 +243,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showError(Throwable error) {
-        if (!isDialogShown && !ui.loginButton.isEnabled() && error instanceof HttpException httpException) {
+        if (!ui.loginButton.isEnabled() && error instanceof HttpException httpException) {
 
             Response<?> response = httpException.response();
 
-        if (response != null && response.errorBody() != null) {
+            if (response != null && response.errorBody() != null) {
                 try {
                     // Convert error body to a string
                     String errorBodyString = response.errorBody().string();
@@ -261,8 +272,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showDialog(String error) {
 
-        isDialogShown = true;
-
         ui.loginButtonProgress.setVisibility(View.GONE);
         ui.loginButton.setText(getString(R.string.login));
         ui.loginButton.setEnabled(true);
@@ -279,9 +288,11 @@ public class LoginActivity extends AppCompatActivity {
         AlertDialog alertDialog = dialog.create();
         alertDialog.getWindow().getAttributes().windowAnimations = R.style.AlertDialogAnimation;
         ok.setOnClickListener(view -> alertDialog.dismiss());
-        alertDialog.setOnShowListener(dialog12 -> isDialogShown = true);
         alertDialog.setOnDismissListener(dialog1 -> isDialogShown = false);
-        alertDialog.show();
+        if (!isDialogShown) {
+            isDialogShown = true;
+            alertDialog.show();
+        }
     }
 
     @Override
@@ -304,8 +315,7 @@ public class LoginActivity extends AppCompatActivity {
         intentAlarmReceiver.putExtra("desc", desc);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intentAlarmReceiver, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-
+        Toast.makeText(context, "ALARM SET", Toast.LENGTH_SHORT).show();
         manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 3000, pendingIntent);
     }
 }

@@ -40,6 +40,10 @@ public interface Service {
     Single<List<TasksListModal>> getTasksList(@FieldMap HashMap<String, String> map);
 
     @FormUrlEncoded
+    @POST("api/User/TasksUpdate")
+    Single<JsonElement> getTasksUpdate(@FieldMap HashMap<String, String> map);
+
+    @FormUrlEncoded
     @POST("api/User/Logoff")
     Single<JsonElement> logOff(@FieldMap HashMap<String, String> map);
 }

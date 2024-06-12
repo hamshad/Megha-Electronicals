@@ -47,6 +47,7 @@ dependencies {
     implementation libs.security.crypto
     implementation libs.lifecycle.process
     implementation libs.dynamicanimation
+    implementation libs.swiperefreshlayout
 
     implementation libs.appcompat
     implementation libs.material

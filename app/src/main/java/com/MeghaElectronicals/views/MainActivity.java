@@ -1,21 +1,17 @@
 package com.MeghaElectronicals.views;
 
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -29,7 +25,6 @@ import com.MeghaElectronicals.databinding.ActivityMainBinding;
 import com.MeghaElectronicals.modal.LoginModal;
 import com.MeghaElectronicals.network.NetworkUtil;
 import com.MeghaElectronicals.retrofit.ServiceRepository;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -43,8 +38,7 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding ui;
     private MySharedPreference pref;
     private ServiceRepository repo;
-    private CompositeDisposable disposable = new CompositeDisposable();
-    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private final CompositeDisposable disposable = new CompositeDisposable();
 
 
     @Override
@@ -56,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         }
         getTaskLists();
+        if (ui.refreshTaskList.isRefreshing()) ui.refreshTaskList.setRefreshing(false);
     }
 
 
@@ -66,27 +61,18 @@ public class MainActivity extends AppCompatActivity {
         ui = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(ui.getRoot());
 
-        bottomSheetBehavior = BottomSheetBehavior.from(ui.bottomSheetMain.getRoot());
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
         Log.d(TAG, "MOBILE SDK: " + Build.VERSION.SDK_INT);
         Log.d(TAG, "APP SDK: " + 27);
 
         pref = new MySharedPreference(this);
         repo = new ServiceRepository(this);
 
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int screenHeight = displayMetrics.heightPixels;
-        int peekHeight = (int) (screenHeight * 0.65); // Set peek height to 65% of the screen height
-        bottomSheetBehavior.setPeekHeight(peekHeight);
-
         // Manually Configuring Work Manager (not REQUIRED) and added WAKE_LOCK permission in manifest file
 //        WorkManager.initialize(this, new Configuration.Builder().build());
 
+        ui.refreshTaskList.setOnRefreshListener(this::getTaskLists);
 
         setListenersAndStuff();
-        handleBackPress();
-
     }
 
     private void setListenersAndStuff() {
@@ -135,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(
                                             jsonElement -> {
-                                                Log.d(TAG, "addTask: " + jsonElement.toString());
+                                                Log.d(TAG, "logOff: " + jsonElement.toString());
                                                 pref.deleteLogin();
                                                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                                                 finish();
@@ -147,41 +133,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View view, int newState) {
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_EXPANDED:
-                        Log.d(TAG, "Bottom Sheet Expanded");
-                        break;
-                    case BottomSheetBehavior.STATE_COLLAPSED:
-                        Log.d(TAG, "Bottom Sheet Collapsed");
-                        break;
-                    case BottomSheetBehavior.STATE_DRAGGING:
-                        Log.d(TAG, "Bottom Sheet Dragging");
-                        break;
-                    case BottomSheetBehavior.STATE_SETTLING:
-                        Log.d(TAG, "Bottom Sheet Settling");
-                        break;
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                        Log.d(TAG, "Bottom Sheet Hidden");
-                        break;
-                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
-                        Log.d(TAG, "Bottom Sheet Half Expanded");
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View view, float v) {
-
-            }
-        });
-    }
-
-    public void openBottomSheet() {
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN)
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     private void getTaskLists() {
@@ -197,41 +148,12 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, "getTaskLists: " + throwable.toString());
                         })
         );
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_HIDDEN) {
-
-                Rect outRect = new Rect();
-                ui.bottomSheetMain.getRoot().getGlobalVisibleRect(outRect);
-
-                if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY()))
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            }
-        }
-        return super.dispatchTouchEvent(ev);
+        ui.refreshTaskList.setRefreshing(false);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         disposable.clear();
-    }
-
-    private void handleBackPress() {
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN)
-                    finish();
-            }
-        };
-        getOnBackPressedDispatcher().addCallback(this, callback);
     }
 }

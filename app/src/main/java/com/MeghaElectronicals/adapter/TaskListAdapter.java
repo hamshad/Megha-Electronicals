@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.MeghaElectronicals.databinding.TaskListItemBinding;
 import com.MeghaElectronicals.modal.TasksListModal;
 import com.MeghaElectronicals.views.MainActivity;
+import com.MeghaElectronicals.views.UpdateTaskDialogFragment;
 
 import java.util.List;
 
@@ -53,9 +54,9 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         h.ui.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.openBottomSheet();
-//                UpdateTaskDialogFragment updateTaskDialog = UpdateTaskDialogFragment.newInstance();
-//                updateTaskDialog.show(activity.getSupportFragmentManager(), "UpdateTaskDialogFragment");
+//                activity.openBottomSheet();
+                UpdateTaskDialogFragment updateTaskDialog = UpdateTaskDialogFragment.newInstance(modal.TaskName(), modal.TaskId());
+                updateTaskDialog.show(activity.getSupportFragmentManager(), "UpdateTaskDialogFragment");
             }
         });
 

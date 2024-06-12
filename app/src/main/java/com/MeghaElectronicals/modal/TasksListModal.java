@@ -13,6 +13,8 @@ package com.MeghaElectronicals.modal;
 //[
 
 public record TasksListModal(String TaskName,
+                             String Department,
+                             String TaskId,
                              String Description,
                              String StartDate,
                              String EndDate,

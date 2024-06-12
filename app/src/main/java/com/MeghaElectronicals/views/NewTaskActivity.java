@@ -270,9 +270,11 @@ public class NewTaskActivity extends AppCompatActivity {
         AlertDialog alertDialog = dialog.create();
         alertDialog.getWindow().getAttributes().windowAnimations = R.style.AlertDialogAnimation;
         ok.setOnClickListener(view -> alertDialog.dismiss());
-        alertDialog.setOnShowListener(dialog12 -> isDialogShown = true);
         alertDialog.setOnDismissListener(dialog1 -> isDialogShown = false);
-        if (!isDialogShown) alertDialog.show();
+        if (!isDialogShown) {
+            isDialogShown = true;
+            alertDialog.show();
+        }
     }
 
     @Override

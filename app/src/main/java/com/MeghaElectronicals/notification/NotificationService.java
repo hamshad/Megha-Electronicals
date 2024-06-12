@@ -82,7 +82,7 @@ public class NotificationService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
-                .setColor(ContextCompat.getColor(this, R.color.blue))
+                .setColor(ContextCompat.getColor(this, R.color.primary))
                 .setSmallIcon(R.drawable.ic_bell)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(title)

@@ -11,8 +11,11 @@ import com.MeghaElectronicals.modal.StatusModal;
 import com.MeghaElectronicals.modal.TasksListModal;
 import com.google.gson.JsonElement;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.rxjava3.core.Single;
 
@@ -85,6 +88,20 @@ public class ServiceRepository {
         Log.d(TAG, "EmpId: " + userData.EmpId() + ", Role: " + userData.Role());
 
         return service.getTasksList(formData);
+    }
+
+    public Single<JsonElement> getTasksUpdate(String TaskId, String CompletionDescription, String Status) {
+        HashMap<String, String> formData = new HashMap<>();
+        formData.put("EmpId", userData.EmpId());
+        formData.put("Role", userData.Role());
+        formData.put("CompletionDate", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Calendar.getInstance().getTime()));
+        formData.put("CompletionDescription", CompletionDescription);
+        formData.put("Status", Status);
+        formData.put("TaskId", TaskId);
+
+        formData.forEach((s, s2) -> Log.d(TAG, s+": "+s2));
+
+        return service.getTasksUpdate(formData);
     }
 
     public Single<JsonElement> logOff() {

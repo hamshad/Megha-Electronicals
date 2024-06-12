@@ -1,52 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardBackgroundColor="@color/backgroundSecondary"
+    android:layout_marginHorizontal="6dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardUseCompatPadding="true"
-    android:layout_marginHorizontal="6dp"
-    app:rippleColor="@color/ripple"
-    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/backgroundSecondary"
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
-    app:cardMaxElevation="6dp">
+    app:cardMaxElevation="6dp"
+    app:cardUseCompatPadding="true"
+    app:rippleColor="@color/ripple"
+    app:strokeWidth="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:layout_margin="20dp">
 
         <TextView
             android:id="@+id/employeeName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
             android:fontFamily="@font/raleway_semibold"
             android:text="Employee Name"
             android:textColor="#d20f46"
             android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/progress"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_default="wrap" />
 
         <TextView
-            android:id="@+id/progress"
+            android:id="@+id/departmentName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Progress"
-            android:textAlignment="viewEnd"
-            app:layout_constraintBottom_toBottomOf="@+id/employeeName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/employeeName"
-            app:layout_constraintTop_toTopOf="@+id/employeeName"
-            app:layout_constraintWidth_default="wrap"
-            app:layout_constraintWidth_percent="0.3" />
+            android:fontFamily="@font/raleway_semibold"
+            android:text="Department Name"
+            android:textColor="#d20f46"
+            android:textSize="14sp"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="@+id/employeeName"
+            app:layout_constraintTop_toBottomOf="@+id/employeeName"
+            app:layout_constraintWidth_default="wrap" />
 
         <View
             android:id="@+id/view"
@@ -72,7 +70,7 @@
             app:layout_constraintBottom_toTopOf="@+id/taskDesc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/view"
-            app:layout_constraintTop_toBottomOf="@+id/employeeName" />
+            app:layout_constraintTop_toBottomOf="@+id/departmentName" />
 
         <TextView
             android:id="@+id/taskDesc"
@@ -105,14 +103,41 @@
             android:id="@+id/endDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
             android:fontFamily="@font/raleway_medium"
             android:text="00-00-0000\n00:00"
             android:textAlignment="viewEnd"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/progressCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/startDate" />
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/progressCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/White"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/raleway_semibold"
+                android:letterSpacing="0.06"
+                android:padding="8dp"
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="6"
+                android:text="Progress"
+                android:textAlignment="center" />
+        </androidx.cardview.widget.CardView>
         <!--        <com.google.android.material.progressindicator.LinearProgressIndicator-->
         <!--            android:id="@+id/progressBar"-->
         <!--            android:layout_width="0dp"-->
@@ -121,8 +146,8 @@
         <!--            android:progress="0"-->
         <!--            android:layout_marginTop="12dp"-->
         <!--            android:layout_marginHorizontal="24pt"-->
-        <!--            android:progressBackgroundTint="@color/blue"-->
-        <!--            android:progressTint="@color/blue"-->
+        <!--            android:progressBackgroundTint="@color/primary"-->
+        <!--            android:progressTint="@color/primary"-->
         <!--            app:layout_constraintEnd_toEndOf="@+id/endDate"-->
         <!--            app:layout_constraintHorizontal_chainStyle="packed"-->
         <!--            app:layout_constraintStart_toStartOf="@+id/startDate"-->

@@ -18,6 +18,7 @@ retrofit = "2.11.0"
 rxandroid = "3.0.2"
 rxjava = "3.1.8"
 securityCrypto = "1.1.0-alpha06"
+swiperefreshlayout = "1.2.0-alpha01"
 workRuntime = "2.9.0"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
@@ -46,6 +47,7 @@ adapter-rxjava3 = { group = "com.squareup.retrofit2", name ="adapter-rxjava3", v
 rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroid" }
 rxjava = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava" }
 security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
+swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }

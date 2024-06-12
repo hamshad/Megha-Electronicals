@@ -51,6 +51,8 @@ public class NotificationWorker extends Worker {
 
         Intent intent = new Intent(context, StopAlarmActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.setAction(Intent.ACTION_MAIN);
+//        intent.addCategory(Intent.CATEGORY_LAUNCHER);
         context.startActivity(intent);
 
         return Result.success();
@@ -66,7 +68,7 @@ public class NotificationWorker extends Worker {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
-                .setColor(ContextCompat.getColor(context, R.color.blue))
+                .setColor(ContextCompat.getColor(context, R.color.primary))
                 .setSmallIcon(R.drawable.ic_bell)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(title)
