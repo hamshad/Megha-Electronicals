@@ -1,13 +1,19 @@
 package com.MeghaElectronicals.views;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,12 +82,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setListenersAndStuff() {
+
+        if (new LoginModal(pref.fetchLogin()).Role().equalsIgnoreCase("Employees")) {
+            ui.mainNavView.getMenu().findItem(R.id.new_task).setVisible(false);
+        }
+
         ui.drawerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ui.mainDrawer.openDrawer(GravityCompat.START);
             }
         });
+
+        ui.infoBtn.setOnClickListener(v -> revealInfoCard(ui.infoRevealCard.getVisibility() == View.INVISIBLE));
 
         ui.mainDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
@@ -149,6 +162,65 @@ public class MainActivity extends AppCompatActivity {
                         })
         );
         ui.refreshTaskList.setRefreshing(false);
+    }
+
+    private void revealInfoCard(boolean open) {
+
+        if (!open) {
+            concealInfoCard();
+            return;
+        }
+
+        Animator animator = ViewAnimationUtils.createCircularReveal(
+                ui.infoRevealCard,
+                ui.infoRevealCard.getWidth(),
+                0,
+                0f,
+                (float) Math.hypot(ui.infoRevealCard.getWidth(), ui.infoRevealCard.getHeight()));
+
+        // Set a natural ease-in/ease-out interpolator.
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+        ui.infoRevealCard.setVisibility(View.VISIBLE);
+        // Finally start the animation
+        animator.start();
+    }
+    private void concealInfoCard() {
+
+        Animator animator = ViewAnimationUtils.createCircularReveal(
+                ui.infoRevealCard,
+                ui.infoRevealCard.getWidth(),
+                0,
+                (float) Math.hypot(ui.infoRevealCard.getWidth(), ui.infoRevealCard.getHeight()),
+                0f);
+
+        // Set a natural ease-in/ease-out interpolator.
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                ui.infoRevealCard.setVisibility(View.INVISIBLE);
+            }
+        });
+        // Finally start the animation
+        animator.start();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            if (ui.infoRevealCard.getVisibility() == View.VISIBLE) {
+
+                Rect outRect = new Rect();
+                ui.infoRevealCard.getGlobalVisibleRect(outRect);
+
+                if(!outRect.contains((int) ev.getRawX(), (int) ev.getRawY()))
+                    concealInfoCard();
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     @Override

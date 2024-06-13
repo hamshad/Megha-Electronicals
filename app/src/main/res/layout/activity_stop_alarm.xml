@@ -9,12 +9,14 @@
 
     <TextView
         android:id="@+id/taskStopAlarm"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/raleway_bold"
         android:text="TASK: "
+        android:textAlignment="center"
         android:textColor="@color/primary"
         android:textSize="36sp"
+        android:layout_marginHorizontal="24dp"
         app:layout_constraintBottom_toTopOf="@+id/descStopAlarm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -24,12 +26,13 @@
 
     <TextView
         android:id="@+id/descStopAlarm"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/raleway_medium"
         android:text="TASK: "
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="20sp"
+        android:layout_marginHorizontal="24dp"
         app:layout_constraintBottom_toTopOf="@+id/cardView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

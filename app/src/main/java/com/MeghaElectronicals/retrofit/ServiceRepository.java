@@ -9,6 +9,7 @@ import com.MeghaElectronicals.modal.EmployeesListModal;
 import com.MeghaElectronicals.modal.LoginModal;
 import com.MeghaElectronicals.modal.StatusModal;
 import com.MeghaElectronicals.modal.TasksListModal;
+import com.MeghaElectronicals.modal.TasksStatus;
 import com.google.gson.JsonElement;
 
 import java.text.SimpleDateFormat;
@@ -58,7 +59,7 @@ public class ServiceRepository {
         formData.put("OfficeId", userData.OfficeId());
         formData.put("Role", userData.Role());
 
-        Log.d(TAG, "OfficeId: " + DID + ", OfficeId: " + userData.OfficeId() + ", Role" + userData.Role());
+        Log.d(TAG, "DID: " + DID + ", OfficeId: " + userData.OfficeId() + ", Role: " + userData.Role());
 
         return service.getEmployeesList(formData);
     }
@@ -102,6 +103,15 @@ public class ServiceRepository {
         formData.forEach((s, s2) -> Log.d(TAG, s+": "+s2));
 
         return service.getTasksUpdate(formData);
+    }
+
+    public Single<TasksStatus> getTasksStatus(String TaskId) {
+        HashMap<String, String> formData = new HashMap<>();
+        formData.put("TaskId", TaskId);
+
+        Log.d(TAG, "TaskId: " + TaskId);
+
+        return service.getTasksStatus(formData);
     }
 
     public Single<JsonElement> logOff() {

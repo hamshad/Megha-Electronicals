@@ -14,7 +14,7 @@ package com.MeghaElectronicals.modal;
 
 public record TasksListModal(String TaskName,
                              String Department,
-                             String TaskId,
+                             int TaskId,
                              String Description,
                              String StartDate,
                              String EndDate,

@@ -175,6 +175,8 @@
         android:textColor="@color/white"
         android:textSize="12sp"
         android:fontFamily="@font/raleway_semibold"
+        android:checked="true"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

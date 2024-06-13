@@ -5,6 +5,7 @@ import com.MeghaElectronicals.modal.EmployeesListModal;
 import com.MeghaElectronicals.modal.LoginModal;
 import com.MeghaElectronicals.modal.StatusModal;
 import com.MeghaElectronicals.modal.TasksListModal;
+import com.MeghaElectronicals.modal.TasksStatus;
 import com.google.gson.JsonElement;
 
 import java.util.HashMap;
@@ -42,6 +43,10 @@ public interface Service {
     @FormUrlEncoded
     @POST("api/User/TasksUpdate")
     Single<JsonElement> getTasksUpdate(@FieldMap HashMap<String, String> map);
+
+    @FormUrlEncoded
+    @POST("api/User/TasksStatus")
+    Single<TasksStatus> getTasksStatus(@FieldMap HashMap<String, String> map);
 
     @FormUrlEncoded
     @POST("api/User/Logoff")

@@ -15,19 +15,17 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.MeghaElectronicals.R;
 import com.MeghaElectronicals.alarm.MyMediaPlayer;
-import com.MeghaElectronicals.alarm.SetAlarm;
 import com.MeghaElectronicals.common.MyFunctions;
-import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.views.StopAlarmActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -41,48 +39,49 @@ public class NotificationService extends FirebaseMessagingService {
         Map<String, String> data = message.getData();
         Log.d(TAG, "Title Background: " + data.get("title"));
         Log.d(TAG, "Body Background: " + data.get("body"));
-        Log.d(TAG, "StartDate: " + data.get("StartDate"));
-        Log.d(TAG, "EndDate: " + data.get("EndDate"));
         Log.d(TAG, "TaskId: " + data.get("TaskId"));
         Log.d(TAG, "Time: " + Calendar.getInstance().getTime());
 
-        new MySharedPreference(this).saveNotificationData(data.get("title"), data.get("body"));
-
-        try {
-            new SetAlarm().setAlarm(this, data.get("title"), data.get("body"), data.get("StartDate"));
-        } catch (ParseException e) {
-            e.fillInStackTrace();
-        }
+//        new MySharedPreference(this).saveNotificationData(data.get("title"), data.get("body"));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 
 //            [WORK MANAGER]
-//            Data.Builder dataBuild = new Data.Builder();
-//            dataBuild.putString("title", data.get("title"));
-//            dataBuild.putString("body", data.get("body"));
+            Data.Builder dataBuild = new Data.Builder();
+            dataBuild.putString("task", data.get("title"));
+            dataBuild.putString("desc", data.get("body"));
+            dataBuild.putString("TaskId", data.get("TaskId"));
 
-            OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).build();
+            Log.d(TAG, "Starting Work Manager");
+            OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInputData(dataBuild.build()).build();
             WorkManager.getInstance(this).enqueue(workRequest);
+
         } else {
             MyMediaPlayer.startPlayer(this);
             if (MyFunctions.isInForeground()) {
-                startActivity(new Intent(this, StopAlarmActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                startActivity(new Intent(this, StopAlarmActivity.class)
+                        .putExtra("task", data.get("title"))
+                        .putExtra("desc", data.get("body"))
+                        .putExtra("TaskId", data.get("TaskId"))
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
-            sendNotification(data.get("title"), data.get("body"));
+            sendNotification(this, data.get("title"), data.get("body"));
         }
     }
 
-    private void sendNotification(String title, String messageBody) {
-        Intent intent = new Intent(this, StopAlarmActivity.class);
+    public static void sendNotification(Context context, String title, String messageBody) {
+        Intent intent = new Intent(context, StopAlarmActivity.class);
+        intent.putExtra("task", title)
+                .putExtra("desc", messageBody);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
                 PendingIntent.FLAG_IMMUTABLE);
 
-        String channelId = getString(R.string.channel_id);
+        String channelId = context.getString(R.string.channel_id);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
-                .setColor(ContextCompat.getColor(this, R.color.primary))
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
+                .setColor(ContextCompat.getColor(context, R.color.primary))
                 .setSmallIcon(R.drawable.ic_bell)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(title)
@@ -93,12 +92,12 @@ public class NotificationService extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Create notification channel
         NotificationChannel channel = new NotificationChannel(
                 channelId,
-                getString(R.string.app_name),
+                context.getString(R.string.app_name),
                 NotificationManager.IMPORTANCE_HIGH
         );
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -112,7 +111,7 @@ public class NotificationService extends FirebaseMessagingService {
 
         notificationManager.createNotificationChannel(channel);
 
-        notificationManager.notify(0, notificationBuilder.build());
+        notificationManager.notify(121, notificationBuilder.build());
     }
 
     @Override

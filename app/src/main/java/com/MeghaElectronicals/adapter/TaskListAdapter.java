@@ -4,15 +4,16 @@ import static com.MeghaElectronicals.common.MyFunctions.convertDate;
 import static com.MeghaElectronicals.common.MyFunctions.nullCheck;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.MeghaElectronicals.R;
 import com.MeghaElectronicals.databinding.TaskListItemBinding;
 import com.MeghaElectronicals.modal.TasksListModal;
 import com.MeghaElectronicals.views.MainActivity;
@@ -43,6 +44,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         TasksListModal modal = tasksList.get(position);
 
         h.ui.employeeName.setText(nullCheck(modal.EmployeName()));
+        h.ui.departmentName.setText(nullCheck(modal.Department()));
         h.ui.progress.setText(nullCheck(modal.Status()));
         h.ui.taskName.setText(nullCheck(modal.TaskName()));
         h.ui.taskDesc.setText(nullCheck(modal.Description()));
@@ -50,11 +52,11 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         h.ui.endDate.setText(convertDate(nullCheck(modal.EndDate())));
 
         setColor(h.ui, modal.ColorsName());
+        setImage(h.ui.statusImg, modal.ColorsName());
 
-        h.ui.getRoot().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        h.ui.materialCardView.setOnClickListener(v -> {
 //                activity.openBottomSheet();
+            if (!UpdateTaskDialogFragment.isBottomSheetUp) {
                 UpdateTaskDialogFragment updateTaskDialog = UpdateTaskDialogFragment.newInstance(modal.TaskName(), modal.TaskId());
                 updateTaskDialog.show(activity.getSupportFragmentManager(), "UpdateTaskDialogFragment");
             }
@@ -85,8 +87,23 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 //    }
 
     private void setColor(TaskListItemBinding ui, String s) {
-        ui.view.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(s)));
-        ui.employeeName.setTextColor(Color.parseColor(s));
+        int colorId = context.getResources().getIdentifier(s, "color", context.getPackageName());
+        int color = ContextCompat.getColor(context, colorId);
+        ui.materialCardView.setStrokeColor(color);
+        ui.progressCard.setCardBackgroundColor(color);
+//        ui.view.setBackgroundTintList(ColorStateList.valueOf(color));
+//        ui.employeeName.setTextColor(Color.parseColor(s));
+//        ui.departmentName.setTextColor(Color.parseColor(s));
+    }
+
+    private void setImage(ImageView statusImg, String s) {
+        switch (s) {
+            case "RED": statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.hot)); break;
+            case "Blue": statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.cold)); break;
+            case "Yellow": statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.warm)); break;
+            case "Green": statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.chilled)); break;
+            default: statusImg.setVisibility(View.GONE);
+        }
     }
 
     @Override

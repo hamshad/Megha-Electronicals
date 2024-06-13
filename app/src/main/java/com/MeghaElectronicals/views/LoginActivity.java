@@ -21,7 +21,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -104,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                     .show();
         }
 
-        if (!ui.stopAnimRadio.isChecked())
+        if (ui.stopAnimRadio.getVisibility() == TextView.VISIBLE && !ui.stopAnimRadio.isChecked())
             makeSensorAnimation();
     }
 
@@ -148,6 +147,17 @@ public class LoginActivity extends AppCompatActivity {
 
         ui.loginButton.setOnClickListener(this::onLoginButtonClicked);
 
+        ui.loginBackgroundImage.setOnLongClickListener(v -> {
+            if (ui.stopAnimRadio.getVisibility() == View.GONE) {
+                ui.stopAnimRadio.setVisibility(View.VISIBLE);
+                makeSensorAnimation();
+            } else {
+                ui.stopAnimRadio.setVisibility(View.GONE);
+                sensorManager.unregisterListener(sensorEventCallback);
+                recreate();
+            }
+            return true;
+        });
 
 
         // TODO: REMOVE TEMPORARY ALARM
@@ -178,17 +188,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
         sensorManager.registerListener(sensorEventCallback, sensor, SensorManager.SENSOR_DELAY_GAME);
-        ui.stopAnimRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d(TAG, "onCheckedChanged: " + isChecked);
-                if (isChecked) {
-                    sensorManager.unregisterListener(sensorEventCallback);
-                    ui.loginCard.setRotationX(0);
-                    ui.loginCard.setRotationY(0);
-                } else {
-                    sensorManager.registerListener(sensorEventCallback, sensor, SensorManager.SENSOR_DELAY_GAME);
-                }
+        ui.stopAnimRadio.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            Log.d(TAG, "onCheckedChanged: " + isChecked);
+            if (isChecked) {
+                sensorManager.unregisterListener(sensorEventCallback);
+                ui.loginCard.setRotationX(0);
+                ui.loginCard.setRotationY(0);
+            } else {
+                sensorManager.registerListener(sensorEventCallback, sensor, SensorManager.SENSOR_DELAY_GAME);
             }
         });
     }
@@ -298,14 +305,16 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(sensorEventCallback);
+        if (ui.stopAnimRadio.getVisibility() == View.VISIBLE)
+            sensorManager.unregisterListener(sensorEventCallback);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         disposable.clear();
-        sensorManager.unregisterListener(sensorEventCallback);
+        if (ui.stopAnimRadio.getVisibility() == View.VISIBLE)
+            sensorManager.unregisterListener(sensorEventCallback);
     }
 
 

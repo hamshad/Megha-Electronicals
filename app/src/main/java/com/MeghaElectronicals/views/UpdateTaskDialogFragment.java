@@ -16,12 +16,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.MeghaElectronicals.R;
+import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.databinding.FragmentUpdateTaskDialogBinding;
 import com.MeghaElectronicals.databinding.LoginAlertdialogBinding;
+import com.MeghaElectronicals.modal.LoginModal;
 import com.MeghaElectronicals.retrofit.ServiceRepository;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -31,19 +32,22 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
 
     private static final String TAG = "UpdateTaskDialog";
+    public static boolean isBottomSheetUp = false;
     FragmentUpdateTaskDialogBinding ui;
     private boolean isDialogShown = false;
     String TaskName = "", TaskId = "";
     private CompositeDisposable disposable;
     private ServiceRepository repo;
+    private MySharedPreference pref;
 
-    public static UpdateTaskDialogFragment newInstance(String TaskName, String TaskId) {
+    public static UpdateTaskDialogFragment newInstance(String TaskName, int TaskId) {
+        isBottomSheetUp = true;
         UpdateTaskDialogFragment updateTaskDialogFragment = new UpdateTaskDialogFragment();
-        Log.d(TAG, "newInstance: " + TaskName);
-        Log.d(TAG, "newInstance: " + TaskId);
+        Log.d(TAG, "TaskName: " + TaskName);
+        Log.d(TAG, "TaskId: " + TaskId);
         Bundle args = new Bundle();
         args.putString("TaskName", TaskName);
-        args.putString("TaskId", TaskId);
+        args.putInt("TaskId", TaskId);
         updateTaskDialogFragment.setArguments(args);
         return updateTaskDialogFragment;
     }
@@ -53,9 +57,10 @@ public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
         super.onCreate(savedInstanceState);
         disposable = new CompositeDisposable();
         repo = new ServiceRepository(requireContext());
+        pref = new MySharedPreference(requireContext());
         if (getArguments() != null) {
-            Log.d(TAG, "onCreate: " + getArguments().getString("TaskName"));
-            Log.d(TAG, "onCreate: " + getArguments().getString("TaskId"));
+            Log.d(TAG, "TaskName: " + getArguments().getString("TaskName"));
+            Log.d(TAG, "TaskId: " + getArguments().getInt("TaskId"));
             TaskName = getArguments().getString("TaskName");
             TaskId = getArguments().getString("TaskId");
         }
@@ -73,7 +78,7 @@ public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
         ui.backButton.setOnClickListener(v -> this.dismiss());
 
         ui.taskName.setText(TaskName);
-        ui.statusBS.setAdapter(new ArrayAdapter<>(requireContext(), R.layout.my_autocomplete_spinner, new ArrayList<>(List.of("Finished", "Rejected"))));
+        ui.statusBS.setAdapter(new ArrayAdapter<>(requireContext(), R.layout.my_autocomplete_spinner, new LoginModal(pref.fetchLogin()).Role().equalsIgnoreCase("Director") ? List.of("Finished", "Rejected") : List.of("Finished") ));
         ui.statusBS.setThreshold(25);
         ui.createNewTaskButton.setOnClickListener(v -> updateTask());
 
@@ -132,6 +137,7 @@ public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
+        isBottomSheetUp = false;
         disposable.clear();
     }
 }

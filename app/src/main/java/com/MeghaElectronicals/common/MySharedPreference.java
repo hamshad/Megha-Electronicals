@@ -49,23 +49,23 @@ public class MySharedPreference {
     }
 
     // Notification Data
-    public void saveNotificationData(String title, String body) {
-        edit.putString("NotificationTitle", title);
-        edit.putString("NotificationBody", body);
-        edit.apply();
-    }
-
-    public String fetchNotificationTitle() {
-        return pref.getString("NotificationTitle", "Task Name");
-    }
-
-    public String fetchNotificationBody() {
-        return pref.getString("NotificationBody", "Task Description");
-    }
-
-    public void deleteNotificationData() {
-        edit.remove("NotificationTitle");
-        edit.remove("NotificationBody");
-        edit.apply();
-    }
+//    public void saveNotificationData(String title, String body) {
+//        edit.putString("NotificationTitle", title);
+//        edit.putString("NotificationBody", body);
+//        edit.apply();
+//    }
+//
+//    public String fetchNotificationTitle() {
+//        return pref.getString("NotificationTitle", "Task Name");
+//    }
+//
+//    public String fetchNotificationBody() {
+//        return pref.getString("NotificationBody", "Task Description");
+//    }
+//
+//    public void deleteNotificationData() {
+//        edit.remove("NotificationTitle");
+//        edit.remove("NotificationBody");
+//        edit.apply();
+//    }
 }

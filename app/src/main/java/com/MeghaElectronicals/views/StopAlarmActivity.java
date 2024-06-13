@@ -7,14 +7,12 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.MeghaElectronicals.alarm.MyMediaPlayer;
-import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.databinding.ActivityStopAlarmBinding;
 
 public class StopAlarmActivity extends AppCompatActivity {
 
     private static final String TAG = "StopAlarmActivity";
     ActivityStopAlarmBinding ui;
-    MySharedPreference pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +22,8 @@ public class StopAlarmActivity extends AppCompatActivity {
 
         MyMediaPlayer.runWakeLock(this);
 
-        pref = new MySharedPreference(this);
-        String task = pref.fetchNotificationTitle();
-        String desc = pref.fetchNotificationBody();
+        String task = getIntent().getStringExtra("task");
+        String desc = getIntent().getStringExtra("desc");
 
         setShowWhenLocked(true);
         setTurnScreenOn(true);
