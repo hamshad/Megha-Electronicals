@@ -20,14 +20,14 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         String dateToBeSet = intent.getStringExtra("dateToBeSet");
 
-        if (dateToBeSet != null && dateToBeSet.isBlank()) {
-
+        if (dateToBeSet != null && !dateToBeSet.isBlank()) {
+            Log.d("SetAlarm", "onReceive: "+dateToBeSet);
         }
 
         Data.Builder dataBuild = new Data.Builder();
         dataBuild.putString("task", intent.getStringExtra("task"));
         dataBuild.putString("desc", intent.getStringExtra("desc"));
-        dataBuild.putString("TaskId", intent.getStringExtra("TaskId"));
+        dataBuild.putString("TaskId", String.valueOf(intent.getIntExtra("TaskId", 0)));
 
         Log.d(TAG, "Starting Work Manager");
         OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInputData(dataBuild.build()).build();

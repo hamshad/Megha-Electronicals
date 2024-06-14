@@ -2,6 +2,8 @@ package com.MeghaElectronicals.views;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.AlarmManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
@@ -165,6 +167,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void revealInfoCard(boolean open) {
+
+        // TODO: remove this cancel alarm
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            ((AlarmManager) getSystemService(Context.ALARM_SERVICE)).cancelAll();
+        }
 
         if (!open) {
             concealInfoCard();

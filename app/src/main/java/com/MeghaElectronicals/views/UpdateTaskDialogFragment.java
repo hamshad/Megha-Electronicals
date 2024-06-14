@@ -35,7 +35,8 @@ public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
     public static boolean isBottomSheetUp = false;
     FragmentUpdateTaskDialogBinding ui;
     private boolean isDialogShown = false;
-    String TaskName = "", TaskId = "";
+    String TaskName = "";
+    int TaskId = 0;
     private CompositeDisposable disposable;
     private ServiceRepository repo;
     private MySharedPreference pref;
@@ -62,7 +63,7 @@ public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
             Log.d(TAG, "TaskName: " + getArguments().getString("TaskName"));
             Log.d(TAG, "TaskId: " + getArguments().getInt("TaskId"));
             TaskName = getArguments().getString("TaskName");
-            TaskId = getArguments().getString("TaskId");
+            TaskId = getArguments().getInt("TaskId");
         }
     }
 

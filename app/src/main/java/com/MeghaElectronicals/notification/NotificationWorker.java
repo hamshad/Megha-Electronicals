@@ -13,10 +13,13 @@ import androidx.work.WorkerParameters;
 
 import com.MeghaElectronicals.R;
 import com.MeghaElectronicals.alarm.MyMediaPlayer;
+import com.MeghaElectronicals.alarm.SetAlarm;
 import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.modal.TasksStatus;
 import com.MeghaElectronicals.retrofit.ServiceRepository;
 import com.MeghaElectronicals.views.StopAlarmActivity;
+
+import java.text.ParseException;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -55,12 +58,15 @@ public class NotificationWorker extends Worker {
         return Result.success();
     }
 
-    private void onSuccessResponse(TasksStatus status) {
+    private void onSuccessResponse(TasksStatus status) throws ParseException {
 
         Log.d("TasksStatus", "onSuccessResponse: " + status.toString());
 
-        if (status.Status().equalsIgnoreCase("Finished") && status.Status().equalsIgnoreCase("Rejected"))
-            return;
+        if (status.Status().equalsIgnoreCase("Finished") || status.Status().equalsIgnoreCase("Rejected")) {
+            new SetAlarm().removeAlarm(context, getInputData().getString("task"), getInputData().getString("desc"), Integer.parseInt(getInputData().getString("TaskId")));
+        } else {
+            new SetAlarm().setAlarm(context, getInputData().getString("task"), getInputData().getString("desc"), Integer.parseInt(getInputData().getString("TaskId")), status.StartDate(), status.EndDate());
+        }
 
 //        player.setVolume(1.0f, 1.0f);
 //        player.setLooping(true);

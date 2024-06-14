@@ -22,11 +22,10 @@ public class SetAlarm {
     // System.currentTimeMillis() + [time]
 
     /**
-     *
-     * @param context Context
-     * @param task Task Name
-     * @param desc Task Description
-     * @param TaskId Task Id
+     * @param context   Context
+     * @param task      Task Name
+     * @param desc      Task Description
+     * @param TaskId    Task Id
      * @param dateToSet Date to Set <i>[ yyyy-MM-dd HH:mm:ss ]</i>
      */
     public void setAlarm(Context context, String task, String desc, int TaskId, String dateToSet, String dateToBeSet) throws ParseException {
@@ -36,14 +35,25 @@ public class SetAlarm {
         intentAlarmReceiver.putExtra("desc", desc);
         intentAlarmReceiver.putExtra("TaskId", TaskId);
         intentAlarmReceiver.putExtra("dateToBeSet", dateToBeSet);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_IMMUTABLE);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_MUTABLE);
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         // Calculate the difference between the specified time and the current time
         long timeDifferenceMillis = getSpecifiedTimeMillis(dateToSet) - System.currentTimeMillis();
+        if (timeDifferenceMillis < 0)
+            timeDifferenceMillis = getSpecifiedTimeMillis(dateToBeSet) - System.currentTimeMillis();
+        if (timeDifferenceMillis < 0) {
+            manager.cancel(pendingIntent);
+            return;
+        }
 
-        manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeDifferenceMillis, pendingIntent);
-        Log.d(TAG ,"timeDifferenceMillis: " + timeDifferenceMillis + " specifiedTimeMillis: " + getSpecifiedTimeMillis(dateToSet) + " currentTimeMillis: "+System.currentTimeMillis());
+        manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeDifferenceMillis, pendingIntent);
+
+        Log.d(TAG, TaskId +
+                ":: timeDifferenceMillis: " + timeDifferenceMillis +
+                " specifiedTimeMillis: " + getSpecifiedTimeMillis(dateToSet) +
+                " currentTimeMillis: " + System.currentTimeMillis());
     }
 
     public void removeAlarm(Context context, String task, String desc, int TaskId) {
@@ -53,18 +63,18 @@ public class SetAlarm {
         intentAlarmReceiver.putExtra("desc", desc);
         intentAlarmReceiver.putExtra("TaskId", TaskId);
         intentAlarmReceiver.putExtra("dateToBeSet", "");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_IMMUTABLE);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_MUTABLE);
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         manager.cancel(pendingIntent);
+        Log.d(TAG, "removeAlarm: " + TaskId + ": is cancelled");
     }
 
     private long getSpecifiedTimeMillis(String dateToSet) throws ParseException {
-
         // Convert the specified date and time to milliseconds
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
         Date date = sdf.parse(dateToSet);
-
         return date.getTime();
     }
 }

@@ -91,14 +91,14 @@ public class ServiceRepository {
         return service.getTasksList(formData);
     }
 
-    public Single<JsonElement> getTasksUpdate(String TaskId, String CompletionDescription, String Status) {
+    public Single<JsonElement> getTasksUpdate(int TaskId, String CompletionDescription, String Status) {
         HashMap<String, String> formData = new HashMap<>();
         formData.put("EmpId", userData.EmpId());
         formData.put("Role", userData.Role());
         formData.put("CompletionDate", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Calendar.getInstance().getTime()));
         formData.put("CompletionDescription", CompletionDescription);
         formData.put("Status", Status);
-        formData.put("TaskId", TaskId);
+        formData.put("TaskId", String.valueOf(TaskId));
 
         formData.forEach((s, s2) -> Log.d(TAG, s+": "+s2));
 
