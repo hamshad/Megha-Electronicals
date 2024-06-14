@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,8 +19,6 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.MeghaElectronicals.R;
-import com.MeghaElectronicals.alarm.MyMediaPlayer;
-import com.MeghaElectronicals.common.MyFunctions;
 import com.MeghaElectronicals.views.StopAlarmActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -44,29 +41,16 @@ public class NotificationService extends FirebaseMessagingService {
 
 //        new MySharedPreference(this).saveNotificationData(data.get("title"), data.get("body"));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-
 //            [WORK MANAGER]
-            Data.Builder dataBuild = new Data.Builder();
-            dataBuild.putString("task", data.get("title"));
-            dataBuild.putString("desc", data.get("body"));
-            dataBuild.putString("TaskId", data.get("TaskId"));
+        Data.Builder dataBuild = new Data.Builder();
+        dataBuild.putString("task", data.get("title"));
+        dataBuild.putString("desc", data.get("body"));
+        dataBuild.putString("TaskId", data.get("TaskId"));
 
-            Log.d(TAG, "Starting Work Manager");
-            OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInputData(dataBuild.build()).build();
-            WorkManager.getInstance(this).enqueue(workRequest);
+        Log.d(TAG, "Starting Work Manager");
+        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInputData(dataBuild.build()).build();
+        WorkManager.getInstance(this).enqueue(workRequest);
 
-        } else {
-            MyMediaPlayer.startPlayer(this);
-            if (MyFunctions.isInForeground()) {
-                startActivity(new Intent(this, StopAlarmActivity.class)
-                        .putExtra("task", data.get("title"))
-                        .putExtra("desc", data.get("body"))
-                        .putExtra("TaskId", data.get("TaskId"))
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            }
-            sendNotification(this, data.get("title"), data.get("body"));
-        }
     }
 
     public static void sendNotification(Context context, String title, String messageBody) {
@@ -75,7 +59,7 @@ public class NotificationService extends FirebaseMessagingService {
                 .putExtra("desc", messageBody);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
-                PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_MUTABLE);
 
         String channelId = context.getString(R.string.channel_id);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);

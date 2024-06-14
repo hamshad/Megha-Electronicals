@@ -4,16 +4,20 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.MeghaElectronicals.R;
+import com.MeghaElectronicals.modal.LoginModal;
+import com.google.gson.Gson;
 
 public class MySharedPreference {
 
     private final String appName;
+    private final Gson gson;
     private final SharedPreferences pref;
     private final SharedPreferences.Editor edit;
 
     // Constructor
     public MySharedPreference(Context context) {
         appName = context.getResources().getString(R.string.app_name);
+        gson = new Gson();
         pref = context.getSharedPreferences(appName, Context.MODE_PRIVATE);
         edit = pref.edit();
     }
@@ -34,13 +38,15 @@ public class MySharedPreference {
     }
 
     // Login Data
-    public void saveLogin(String login) {
+    public void saveLogin(LoginModal loginModal) {
+        String login = gson.toJson(loginModal);
         edit.putString("Login", login);
         edit.apply();
     }
 
-    public String fetchLogin() {
-        return pref.getString("Login", "");
+    public LoginModal fetchLogin() {
+        String login = pref.getString("Login", "");
+        return gson.fromJson(login, LoginModal.class);
     }
 
     public void deleteLogin() {

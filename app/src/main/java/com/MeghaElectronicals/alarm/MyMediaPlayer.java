@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.widget.Toast;
 
 import com.MeghaElectronicals.R;
 
@@ -25,9 +26,9 @@ public class MyMediaPlayer {
     public static void runWakeLock(Context context) {
         if (powerManager == null || wakeLock == null) {
             powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MeghaElectronicals:WakeLock");
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MeghaElectronicals::WakeLock");
         }
-        wakeLock.acquire(5 * 60 * 1000L /*5 minutes*/);
+        wakeLock.acquire(30 * 1000L /*30 Seconds*/);
     }
 
     public static void startPlayer(Context context) {
@@ -41,6 +42,7 @@ public class MyMediaPlayer {
                 .build());
         player.setVolume(1.0f, 1.0f);
         player.setLooping(true);
+        player.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
 
         Uri uri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alarm_clock_old);
         new Handler(Looper.getMainLooper()).post(() -> {
@@ -50,6 +52,7 @@ public class MyMediaPlayer {
                 player.prepareAsync();  // Use asynchronous prepare
             } catch (Exception e) {
                 e.fillInStackTrace();
+                Toast.makeText(context, "Couldn't play the audio!", Toast.LENGTH_SHORT).show();
             }
         });
 

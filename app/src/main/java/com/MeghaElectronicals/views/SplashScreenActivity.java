@@ -66,7 +66,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
         DELAY_ANIMATION += 200;
         handler.postDelayed(() -> {
-            Intent intent = new Intent(this, pref.fetchLogin().isEmpty() ? LoginActivity.class : MainActivity.class);
+            Intent intent = new Intent(this, pref.fetchLogin() == null ? LoginActivity.class : MainActivity.class);
             startActivity(intent);
             finish();
         }, DELAY_ANIMATION);

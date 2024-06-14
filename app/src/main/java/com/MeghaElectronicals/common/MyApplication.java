@@ -37,7 +37,7 @@ public class MyApplication extends Application {
                 Toast.makeText(this, "Something went wrong.", Toast.LENGTH_SHORT).show());
 
         MySharedPreference pref = new MySharedPreference(this);
-        Intent i = new Intent(MyApplication.this, pref.fetchLogin().isEmpty() ? LoginActivity.class : MainActivity.class);
+        Intent i = new Intent(MyApplication.this, pref.fetchLogin() == null ? LoginActivity.class : MainActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         Runtime.getRuntime().exit(0);

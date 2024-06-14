@@ -30,7 +30,7 @@ public class ServiceRepository {
     public ServiceRepository(Context context) {
         pref = new MySharedPreference(context);
         service = RetrofitInstance.getService();
-        userData = new LoginModal(pref.fetchLogin());
+        userData = pref.fetchLogin();
     }
 
     public Single<LoginModal> getLoginData(String email, String password) {

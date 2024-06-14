@@ -2,8 +2,6 @@ package com.MeghaElectronicals.views;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.AlarmManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
@@ -21,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -30,11 +29,13 @@ import com.MeghaElectronicals.R;
 import com.MeghaElectronicals.adapter.TaskListAdapter;
 import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.databinding.ActivityMainBinding;
-import com.MeghaElectronicals.modal.LoginModal;
+import com.MeghaElectronicals.databinding.LoaderDialogBinding;
 import com.MeghaElectronicals.network.NetworkUtil;
 import com.MeghaElectronicals.retrofit.ServiceRepository;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.util.function.Function;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private MySharedPreference pref;
     private ServiceRepository repo;
     private final CompositeDisposable disposable = new CompositeDisposable();
+    private TaskListAdapter taskListAdapter;
 
 
     @Override
@@ -75,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
         pref = new MySharedPreference(this);
         repo = new ServiceRepository(this);
 
+        taskListAdapter = new TaskListAdapter(this);
+        ui.taskListRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        ui.taskListRecycler.setAdapter(taskListAdapter);
         // Manually Configuring Work Manager (not REQUIRED) and added WAKE_LOCK permission in manifest file
 //        WorkManager.initialize(this, new Configuration.Builder().build());
 
@@ -85,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setListenersAndStuff() {
 
-        if (new LoginModal(pref.fetchLogin()).Role().equalsIgnoreCase("Employees")) {
+        if (pref.fetchLogin().Role().equalsIgnoreCase("Employees")) {
             ui.mainNavView.getMenu().findItem(R.id.new_task).setVisible(false);
         }
 
@@ -102,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
                 TextView username = drawerView.findViewById(R.id.username);
-                String drawerText = new LoginModal(pref.fetchLogin()).FullName().split(" ")[0];
+                String drawerText = pref.fetchLogin().FullName().split(" ")[0];
                 username.setText(drawerText);
             }
 
@@ -151,27 +156,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getTaskLists() {
-        disposable.add(
-                repo.getTasksListData()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(tasksListModals -> {
-                            Log.d(TAG, "getTaskLists: " + tasksListModals.toString());
-                            ui.taskListRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                            ui.taskListRecycler.setAdapter(new TaskListAdapter(tasksListModals, MainActivity.this));
-                        }, throwable -> {
-                            Log.d(TAG, "getTaskLists: " + throwable.toString());
-                        })
-        );
+        Function<Boolean, Void> loader = loader();
+        if (taskListAdapter.getItemCount() == 0) loader.apply(true);
+        new Handler().postDelayed(() ->
+                disposable.add(
+                        repo.getTasksListData()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(tasksListModals -> {
+                                    Log.d(TAG, "getTaskLists: " + tasksListModals.toString());
+                                    taskListAdapter.addTasksList(tasksListModals);
+                                    loader.apply(false);
+                                }, throwable -> {
+                                    Log.d(TAG, "getTaskLists: " + throwable.toString());
+                                    runOnUiThread(() -> Toast.makeText(this, "Couldn't Load Tasks!", Toast.LENGTH_SHORT).show());
+                                    loader.apply(false);
+                                })
+                ), 2000);
         ui.refreshTaskList.setRefreshing(false);
     }
 
     private void revealInfoCard(boolean open) {
-
-        // TODO: remove this cancel alarm
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            ((AlarmManager) getSystemService(Context.ALARM_SERVICE)).cancelAll();
-        }
 
         if (!open) {
             concealInfoCard();
@@ -192,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
         // Finally start the animation
         animator.start();
     }
+
     private void concealInfoCard() {
 
         Animator animator = ViewAnimationUtils.createCircularReveal(
@@ -223,11 +229,29 @@ public class MainActivity extends AppCompatActivity {
                 Rect outRect = new Rect();
                 ui.infoRevealCard.getGlobalVisibleRect(outRect);
 
-                if(!outRect.contains((int) ev.getRawX(), (int) ev.getRawY()))
+                if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY()))
                     concealInfoCard();
             }
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    // Function Currying
+    private Function<Boolean, Void> loader() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.LoaderDialog);
+        LoaderDialogBinding loaderUi = LoaderDialogBinding.inflate(getLayoutInflater());
+
+        dialog.setView(loaderUi.getRoot());
+
+        AlertDialog alertDialog = dialog.create();
+        alertDialog.getWindow().getAttributes().windowAnimations = R.style.AlertDialogAnimation;
+        alertDialog.getWindow().getAttributes().width = ui.getRoot().getLayoutParams().width;
+
+        return (Boolean open) -> {
+            if (open) alertDialog.show();
+            else alertDialog.dismiss();
+            return null;
+        };
     }
 
     @Override

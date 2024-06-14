@@ -1,8 +1,6 @@
 package com.MeghaElectronicals.views;
 
 import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,7 +20,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -34,7 +31,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.MeghaElectronicals.R;
-import com.MeghaElectronicals.alarm.AlarmReceiver;
 import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.databinding.ActivityLoginBinding;
 import com.MeghaElectronicals.modal.LoginModal;
@@ -158,17 +154,6 @@ public class LoginActivity extends AppCompatActivity {
             }
             return true;
         });
-
-
-        // TODO: REMOVE TEMPORARY ALARM
-        ui.loginButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                setAlarm(LoginActivity.this, "TASK", "DESCRIPTION");
-                return false;
-            }
-        });
-
     }
 
     private void makeSensorAnimation() {
@@ -235,9 +220,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showData(LoginModal data) {
 
-        Log.d("LOGIN API", data.toJsonString());
+        Log.d("LOGIN API", data.toString());
 
-        pref.saveLogin(data.toJsonString());
+        pref.saveLogin(data);
 
         startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         finish();
@@ -315,16 +300,5 @@ public class LoginActivity extends AppCompatActivity {
         disposable.clear();
         if (ui.stopAnimRadio.getVisibility() == View.VISIBLE)
             sensorManager.unregisterListener(sensorEventCallback);
-    }
-
-
-    public void setAlarm(Context context, String task, String desc) {
-        Intent intentAlarmReceiver = new Intent(context, AlarmReceiver.class);
-        intentAlarmReceiver.putExtra("task", task);
-        intentAlarmReceiver.putExtra("desc", desc);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intentAlarmReceiver, PendingIntent.FLAG_IMMUTABLE);
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Toast.makeText(context, "ALARM SET", Toast.LENGTH_SHORT).show();
-        manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 3000, pendingIntent);
     }
 }

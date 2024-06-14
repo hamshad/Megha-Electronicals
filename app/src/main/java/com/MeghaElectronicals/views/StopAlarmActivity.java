@@ -20,8 +20,6 @@ public class StopAlarmActivity extends AppCompatActivity {
         ui = ActivityStopAlarmBinding.inflate(getLayoutInflater());
         setContentView(ui.getRoot());
 
-        MyMediaPlayer.runWakeLock(this);
-
         String task = getIntent().getStringExtra("task");
         String desc = getIntent().getStringExtra("desc");
 

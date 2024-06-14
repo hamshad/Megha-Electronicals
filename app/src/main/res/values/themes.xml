@@ -25,6 +25,11 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="LoaderDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@drawable/dialog_round_corners</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:windowBackground">@drawable/dialog_round_corners</item>
     </style>

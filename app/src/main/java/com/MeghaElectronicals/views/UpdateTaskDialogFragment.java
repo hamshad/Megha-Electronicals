@@ -19,7 +19,6 @@ import com.MeghaElectronicals.R;
 import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.databinding.FragmentUpdateTaskDialogBinding;
 import com.MeghaElectronicals.databinding.LoginAlertdialogBinding;
-import com.MeghaElectronicals.modal.LoginModal;
 import com.MeghaElectronicals.retrofit.ServiceRepository;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -79,7 +78,7 @@ public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
         ui.backButton.setOnClickListener(v -> this.dismiss());
 
         ui.taskName.setText(TaskName);
-        ui.statusBS.setAdapter(new ArrayAdapter<>(requireContext(), R.layout.my_autocomplete_spinner, new LoginModal(pref.fetchLogin()).Role().equalsIgnoreCase("Director") ? List.of("Finished", "Rejected") : List.of("Finished") ));
+        ui.statusBS.setAdapter(new ArrayAdapter<>(requireContext(), R.layout.my_autocomplete_spinner, pref.fetchLogin().Role().equalsIgnoreCase("Director") ? List.of("Finished", "Rejected") : List.of("Finished") ));
         ui.statusBS.setThreshold(25);
         ui.createNewTaskButton.setOnClickListener(v -> updateTask());
 
