@@ -6,6 +6,7 @@
         <item name="colorAccent">@color/secondary</item>
         <item name="colorSurfaceContainer">@color/backgroundSecondary</item>
         <item name="colorControlActivated">@color/backgroundSecondary</item>
+        <item name="colorControlHighlight">@color/ripple</item>
         <item name="android:windowIsTranslucent">false</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:textViewStyle">@style/MyTextView</item>
@@ -44,4 +45,13 @@
     <style name="Theme.BuzzerTest.Splash" parent="Theme.BuzzerTest">
         <item name="android:windowIsTranslucent">true</item>
     </style>
+
+    <style name="Theme.BuzzerTest.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.BuzzerTest.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.BuzzerTest.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

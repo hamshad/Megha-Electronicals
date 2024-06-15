@@ -5,6 +5,11 @@ import static com.MeghaElectronicals.common.MyFunctions.nullCheck;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,22 +62,32 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     public void onBindViewHolder(@NonNull TaskListViewHolder h, int position) {
         TasksListModal modal = tasksList.get(position);
 
-        // TODO: ADD THE COMPLETION STATUS AND ASSIGNED BY NAME
-
         ui.employeeName.setText(nullCheck(modal.EmployeName()));
         ui.departmentName.setText(nullCheck(modal.Department()));
         ui.progress.setText(nullCheck(modal.Status()));
+        ui.assignedBy.setText(setColoredText("Assigned by: ", nullCheck(modal.CreatedName()), true));
         ui.taskName.setText(nullCheck(modal.TaskName()));
         ui.taskDesc.setText(nullCheck(modal.Description()));
-        ui.startDate.setText(convertDate(nullCheck(modal.StartDate())));
-        ui.endDate.setText(convertDate(nullCheck(modal.EndDate())));
+        ui.startDate.setText(setColoredText("Start\n", convertDate(nullCheck(modal.StartDate())), false));
+        ui.endDate.setText(setColoredText("End\n", convertDate(nullCheck(modal.EndDate())), false));
+
+        if (!modal.Status().equalsIgnoreCase("In-Progress")) {
+            ui.completionDesc.setVisibility(View.VISIBLE);
+            ui.completionDate.setVisibility(View.VISIBLE);
+            ui.completionDesc.setText(setColoredText("Completion: ", modal.CompletionDescription(), true));
+            ui.completionDate.setText(setColoredText("Completion\n", convertDate(modal.CompletionDate()), false));
+        }
 
         setColor(modal.ColorsName());
         setImage(ui.statusImg, modal.ColorsName());
 
-        Log.d("TAG", "fetchLogin().EmpId: " + new MySharedPreference(context).fetchLogin().EmpId());
-        Log.d("TAG", "CreatedBy: " + modal.CreatedBy());
-        if (new MySharedPreference(context).fetchLogin().EmpId().equals(modal.CreatedBy()) && modal.Status().equalsIgnoreCase("In-Progress")) {
+        String EmpId = new MySharedPreference(context).fetchLogin().EmpId();
+
+        Log.d("TAG", "onBindViewHolder: "+modal.EmpId()+ " --- "+EmpId);
+        Log.d("TAG", "onBindViewHolder: "+modal.CreatedBy());
+
+        if ((EmpId.equals(modal.CreatedBy()) || EmpId.equals(modal.EmpId())) && modal.Status().equalsIgnoreCase("In-Progress")) {
+            ui.updateTaskBtn.setVisibility(View.VISIBLE);
             ui.materialCardView.setOnClickListener(v -> {
 //                activity.openBottomSheet();
                 if (!UpdateTaskDialogFragment.isBottomSheetUp) {
@@ -138,6 +153,16 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         }
     }
 
+    public SpannableString setColoredText(String prefix, String content, boolean setItalic) {
+        if (nullCheck(content).equals("-")) return new SpannableString("-");
+        String fullText = prefix + content;
+        SpannableString spannableString = new SpannableString(fullText);
+        int color = ContextCompat.getColor(context, R.color.tertiary);
+        spannableString.setSpan(new ForegroundColorSpan(color), 0, prefix.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (setItalic) spannableString.setSpan(new StyleSpan(Typeface.ITALIC), 0, prefix.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannableString;
+    }
+
     @Override
     public int getItemCount() {
         return tasksList.size();
@@ -171,7 +196,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
             // Compare unique TaskIds
-            return oldList.get(oldItemPosition).TaskId() == newList.get(newItemPosition).TaskId();
+            return oldList.get(oldItemPosition).toString().equals(newList.get(newItemPosition).toString());
         }
 
         @Override

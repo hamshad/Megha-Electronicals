@@ -13,7 +13,8 @@ package com.MeghaElectronicals.modal;
 //        "Status": "In-Progress",
 //        "ColorsName": "RED",
 //        "EmployeName": "Employees",
-//        "CreatedBy": "7f86810c-d90a-4f65-a98c-9a644f0f89d6",
+//        "EmpId": "7f86810c-d90a-4f65-a98c-9a644f0f89d6",
+//        "CreatedBy": "689f83ae-9db8-43b1-a3d9-ff4fd2ce047e",
 //        "CreatedName": "Santosh Pawar"
 //    }
 //]
@@ -29,6 +30,7 @@ public record TasksListModal(String TaskName,
                              String Status,
                              String ColorsName,
                              String EmployeName,
+                             String EmpId,
                              String CreatedBy,
                              String CreatedName) {
 }

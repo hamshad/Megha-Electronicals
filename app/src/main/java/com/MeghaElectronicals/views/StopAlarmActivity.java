@@ -31,6 +31,9 @@ public class StopAlarmActivity extends AppCompatActivity {
         ui.taskStopAlarm.setText(task);
         ui.descStopAlarm.setText(desc);
 
-        ui.stopAlarmBtn.setOnClickListener(v -> MyMediaPlayer.stopPlayer(getApplicationContext()));
+        ui.stopAlarmBtn.setOnClickListener(v -> {
+            MyMediaPlayer.stopPlayer(getApplicationContext());
+            finish();
+        });
     }
 }

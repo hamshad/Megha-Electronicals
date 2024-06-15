@@ -15,6 +15,15 @@
         android:contentDescription="Background Image"
         android:src="@drawable/circle_scatter_haikei"
         android:scaleType="centerCrop"/>
+    <!--<com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/login_background_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:translationZ="-50dp"
+        app:lottie_rawRes="@raw/strips"
+        android:scaleType="centerCrop"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"/>-->
 
     <androidx.cardview.widget.CardView
         android:id="@+id/login_card"

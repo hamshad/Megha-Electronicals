@@ -12,10 +12,10 @@
         android:layout_height="50dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="4dp"
+        android:rotation="-12"
         android:scaleType="centerCrop"
         android:src="@drawable/hot"
         android:translationZ="10dp"
-        android:rotation="-12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -44,8 +44,8 @@
             android:letterSpacing="0.06"
             android:padding="8dp"
             android:text="Progress"
-            android:textSize="20sp"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textSize="20sp" />
     </androidx.cardview.widget.CardView>
 
     <com.google.android.material.card.MaterialCardView
@@ -64,8 +64,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:rippleColor="@color/ripple"
-        app:strokeWidth="6dp"
-        app:strokeColor="@color/primary">
+        app:strokeColor="@color/primary"
+        app:strokeWidth="6dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -79,8 +79,10 @@
                 android:layout_marginTop="12dp"
                 android:fontFamily="@font/raleway_semibold"
                 android:text="Employee Name"
-                android:textColor="#C83860"
+                android:textColor="@color/tertiary"
                 android:textSize="22sp"
+                app:layout_constraintEnd_toStartOf="@+id/updateTaskBtn"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -91,51 +93,97 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/raleway_semibold"
                 android:text="Department Name"
-                android:textColor="#C83860"
+                android:textColor="@color/tertiary"
                 android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="@+id/employeeName"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintStart_toStartOf="@+id/employeeName"
                 app:layout_constraintTop_toBottomOf="@+id/employeeName" />
+
+            <ImageView
+                android:id="@+id/updateTaskBtn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="12dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_update"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/departmentName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/employeeName"
+                app:layout_constraintTop_toTopOf="@+id/employeeName"
+                app:layout_constraintVertical_bias="0.5"
+                app:tint="@color/tertiary" />
 
             <View
                 android:id="@+id/view"
                 android:layout_width="4dp"
                 android:layout_height="0dp"
                 android:background="@drawable/dialog_round_corners"
-                android:backgroundTint="#C83860"
-                app:layout_constraintBottom_toBottomOf="@+id/taskDesc"
+                android:backgroundTint="@color/tertiary"
+                app:layout_constraintBottom_toBottomOf="@+id/completionDesc"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/taskName" />
+                app:layout_constraintTop_toTopOf="@+id/assignedBy" />
 
+
+            <TextView
+                android:id="@+id/assignedBy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/raleway_medium"
+                android:text="Assigned By"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/taskName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/view"
+                app:layout_constraintTop_toBottomOf="@+id/departmentName" />
 
             <TextView
                 android:id="@+id/taskName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="18dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/raleway_semibold"
                 android:text="Task Name"
-                android:textSize="24sp"
+                android:textSize="26sp"
                 app:layout_constraintBottom_toTopOf="@+id/taskDesc"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/view"
-                app:layout_constraintTop_toBottomOf="@+id/departmentName" />
+                app:layout_constraintTop_toBottomOf="@+id/assignedBy" />
 
             <TextView
                 android:id="@+id/taskDesc"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="18dp"
-                android:layout_marginBottom="16dp"
                 android:fontFamily="@font/raleway_medium"
                 android:text="Task Description"
                 android:textSize="20sp"
-                app:layout_constraintBottom_toTopOf="@+id/startDate"
+                app:layout_constraintBottom_toTopOf="@+id/completionDesc"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/view"
                 app:layout_constraintTop_toBottomOf="@+id/taskName" />
+
+            <TextView
+                android:id="@+id/completionDesc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway_medium"
+                android:text="Completion Description"
+                android:textSize="20sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/completionDate"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/view"
+                app:layout_constraintTop_toBottomOf="@+id/taskDesc"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/startDate"
@@ -143,12 +191,28 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/raleway_medium"
                 android:text="00-00-0000\n00:00"
-                android:textSize="16sp"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="@+id/endDate"
-                app:layout_constraintEnd_toStartOf="@+id/endDate"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="@+id/completionDate"
+                app:layout_constraintEnd_toStartOf="@+id/completionDate"
+                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/endDate" />
+                app:layout_constraintTop_toTopOf="@+id/completionDate" />
+
+            <TextView
+                android:id="@+id/completionDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/raleway_semibold"
+                android:text="00-00-0000\n00:00"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/endDate"
+                app:layout_constraintStart_toEndOf="@+id/startDate"
+                app:layout_constraintTop_toBottomOf="@+id/completionDesc"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/endDate"
@@ -157,10 +221,23 @@
                 android:fontFamily="@font/raleway_medium"
                 android:text="00-00-0000\n00:00"
                 android:textAlignment="viewEnd"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="@+id/completionDate"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/startDate" />
+                app:layout_constraintStart_toEndOf="@+id/completionDate"
+                app:layout_constraintTop_toTopOf="@+id/completionDate" />
+
+            <!--<View
+                android:id="@+id/completeDivider"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/triangle"
+                app:layout_constraintBottom_toTopOf="@+id/completionDesc"
+                app:layout_constraintEnd_toEndOf="@+id/completionDate"
+                app:layout_constraintStart_toEndOf="@+id/startDate" />-->
+
+
             <!--        <com.google.android.material.progressindicator.LinearProgressIndicator-->
             <!--            android:id="@+id/progressBar"-->
             <!--            android:layout_width="0dp"-->

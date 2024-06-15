@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.MeghaElectronicals.R;
 import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.databinding.ActivitySplashScreenBinding;
+import com.MeghaElectronicals.views.BoardingScreens.BoardingSreensActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -66,9 +67,17 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
         DELAY_ANIMATION += 200;
         handler.postDelayed(() -> {
-            Intent intent = new Intent(this, pref.fetchLogin() == null ? LoginActivity.class : MainActivity.class);
-            startActivity(intent);
-            finish();
+//            if (pref.showBoardingScreen()) {
+            if (true) {
+                Intent intent = new Intent(this, BoardingSreensActivity.class);
+                startActivity(intent);
+                pref.setShowBoardingScreen(false);
+                finish();
+            } else {
+                Intent intent = new Intent(this, pref.fetchLogin() == null ? LoginActivity.class : MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
         }, DELAY_ANIMATION);
     }
 }

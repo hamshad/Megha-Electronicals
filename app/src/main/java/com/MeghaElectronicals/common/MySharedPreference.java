@@ -37,6 +37,18 @@ public class MySharedPreference {
         edit.apply();
     }
 
+
+    // Boarding Screen
+    public void setShowBoardingScreen(boolean show) {
+        edit.putBoolean("BoardingScreen", show);
+        edit.apply();
+    }
+
+    public boolean showBoardingScreen() {
+        return pref.getBoolean("BoardingScreen", true);
+    }
+
+
     // Login Data
     public void saveLogin(LoginModal loginModal) {
         String login = gson.toJson(loginModal);

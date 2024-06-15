@@ -78,7 +78,7 @@ public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
         ui.backButton.setOnClickListener(v -> this.dismiss());
 
         ui.taskName.setText(TaskName);
-        ui.statusBS.setAdapter(new ArrayAdapter<>(requireContext(), R.layout.my_autocomplete_spinner, pref.fetchLogin().Role().equalsIgnoreCase("Director") ? List.of("Finished", "Rejected") : List.of("Finished") ));
+        ui.statusBS.setAdapter(new ArrayAdapter<>(requireContext(), R.layout.my_autocomplete_spinner, pref.fetchLogin().Role().equalsIgnoreCase("Director") ? List.of("Completed", "Rejected") : List.of("Completed") ));
         ui.statusBS.setThreshold(25);
         ui.createNewTaskButton.setOnClickListener(v -> updateTask());
 

@@ -74,6 +74,9 @@ public class NotificationWorker extends Worker {
             }
         }
 
+        String TaskName = status.TaskName();
+        String Description = status.CompletionDescription() == null ? status.Description() : status.CompletionDescription();
+
 //        player.setVolume(1.0f, 1.0f);
 //        player.setLooping(true);
 //        player.start();
@@ -81,11 +84,11 @@ public class NotificationWorker extends Worker {
         MyMediaPlayer.startPlayer(context);
         MyMediaPlayer.runWakeLock(context);
 
-        NotificationService.sendNotification(context, getInputData().getString("task"), getInputData().getString("desc"));
+        NotificationService.sendNotification(context, TaskName, Description);
 
         Intent intent = new Intent(context, StopAlarmActivity.class);
-        intent.putExtra("task", status.TaskName())
-                .putExtra("desc", status.CompletionDescription() == null ? status.Description() : status.CompletionDescription());
+        intent.putExtra("task", TaskName)
+                .putExtra("desc", Description);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 //        intent.setAction(Intent.ACTION_MAIN);
 //        intent.addCategory(Intent.CATEGORY_LAUNCHER);

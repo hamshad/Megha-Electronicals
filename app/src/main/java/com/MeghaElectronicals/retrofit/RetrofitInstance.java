@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitInstance {
 
 //    public static final String BASE_URL = "http://cms.gurumishrihmc.edu.in/";
-    public static final String BASE_URL = "http://192.168.1.20:8040/";
+    public static final String BASE_URL = "http://192.168.1.24:8040/";
 
     static Retrofit retrofit;
 

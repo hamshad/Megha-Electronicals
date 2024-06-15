@@ -84,9 +84,10 @@ public class ServiceRepository {
     public Single<List<TasksListModal>> getTasksListData() {
         HashMap<String, String> formData = new HashMap<>();
         formData.put("EmpId", userData.EmpId());
+        formData.put("OfficeId", userData.OfficeId());
         formData.put("Role", userData.Role());
 
-        Log.d(TAG, "EmpId: " + userData.EmpId() + ", Role: " + userData.Role());
+        Log.d(TAG, "EmpId: " + userData.EmpId() + "OfficeId: " + userData.OfficeId() + ", Role: " + userData.Role());
 
         return service.getTasksList(formData);
     }

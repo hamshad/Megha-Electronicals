@@ -84,10 +84,26 @@ public class LoginActivity extends AppCompatActivity {
             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
         }
         if (!Settings.canDrawOverlays(this)) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            requestOverlayPermission.launch(intent);
+            if (Build.MANUFACTURER.equalsIgnoreCase("Xiaomi")) {
+                Intent intent = new Intent("miui.intent.action.APP_PERM_EDITOR");
+                intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
+                intent.putExtra("extra_pkgname", getPackageName());
+                startActivity(intent);
+//                Toast.makeText(this, Build.MANUFACTURER, Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                requestOverlayPermission.launch(intent);
+            }
         }
+
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+//            Intent intent = new Intent();
+//            intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+//            intent.setData(Uri.parse("package:" + getPackageName()));
+//            startActivity(intent);
+//        }
     }
 
     @Override
