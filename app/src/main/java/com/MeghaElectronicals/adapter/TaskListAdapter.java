@@ -83,10 +83,10 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 
         String EmpId = new MySharedPreference(context).fetchLogin().EmpId();
 
-        Log.d("TAG", "onBindViewHolder: "+modal.EmpId()+ " --- "+EmpId);
+        Log.d("TAG", "onBindViewHolder: "+modal.AssignedToId() + " --- " + EmpId);
         Log.d("TAG", "onBindViewHolder: "+modal.CreatedBy());
 
-        if ((EmpId.equals(modal.CreatedBy()) || EmpId.equals(modal.EmpId())) && modal.Status().equalsIgnoreCase("In-Progress")) {
+        if ((EmpId.equals(modal.CreatedBy()) || EmpId.equals(modal.AssignedToId())) && modal.Status().equalsIgnoreCase("In-Progress")) {
             ui.updateTaskBtn.setVisibility(View.VISIBLE);
             ui.materialCardView.setOnClickListener(v -> {
 //                activity.openBottomSheet();
@@ -96,6 +96,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
                 }
             });
         } else {
+            ui.updateTaskBtn.setVisibility(View.GONE);
             ui.materialCardView.setClickable(false);
             ui.materialCardView.setFocusable(false);
         }

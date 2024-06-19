@@ -96,8 +96,10 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
+    <string name="overlay_permission">This permission allows the app to display a stop button when the alarm starts playing, enabling you to stop the alarm easily.</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="notification_permission">This permission allows the app to send you notifications for assigned tasks, ensuring you never miss an important task.</string>
 </resources>
 
     <!--

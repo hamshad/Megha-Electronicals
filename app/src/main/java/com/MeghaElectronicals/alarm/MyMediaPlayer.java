@@ -13,6 +13,7 @@ import android.os.PowerManager;
 import android.widget.Toast;
 
 import com.MeghaElectronicals.R;
+import com.MeghaElectronicals.common.MySharedPreference;
 
 public class MyMediaPlayer {
 
@@ -36,15 +37,16 @@ public class MyMediaPlayer {
 //            player = MediaPlayer.create(context, R.raw.alarm_clock_old);
             player = new MediaPlayer();
         }
+        boolean isDirector = new MySharedPreference(context).fetchLogin().Role().equalsIgnoreCase("Director");
         player.setAudioAttributes(new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ALARM)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
         player.setVolume(1.0f, 1.0f);
-        player.setLooping(true);
+        player.setLooping(!isDirector);
         player.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
 
-        Uri uri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alarm_clock_old);
+        Uri uri = Uri.parse("android.resource://" + context.getPackageName() + "/" + (isDirector ? R.raw.director_alarm : R.raw.alarm_clock_old));
         new Handler(Looper.getMainLooper()).post(() -> {
             try {
                 player.setDataSource(context, uri);

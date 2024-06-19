@@ -75,10 +75,10 @@ public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
         int screenHeight = displayMetrics.heightPixels;
         ui.getRoot().setMinimumHeight(screenHeight);
 
-        ui.backButton.setOnClickListener(v -> this.dismiss());
+        ui.backButton.setOnClickListener(v -> UpdateTaskDialogFragment.this.dismiss());
 
         ui.taskName.setText(TaskName);
-        ui.statusBS.setAdapter(new ArrayAdapter<>(requireContext(), R.layout.my_autocomplete_spinner, pref.fetchLogin().Role().equalsIgnoreCase("Director") ? List.of("Completed", "Rejected") : List.of("Completed") ));
+        ui.statusBS.setAdapter(new ArrayAdapter<>(requireContext(), R.layout.my_autocomplete_spinner, pref.fetchLogin().Role().equalsIgnoreCase("Director") ? List.of("Completed", "Cancel") : List.of("Completed") ));
         ui.statusBS.setThreshold(25);
         ui.createNewTaskButton.setOnClickListener(v -> updateTask());
 

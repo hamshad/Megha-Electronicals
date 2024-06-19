@@ -30,7 +30,7 @@ public record TasksListModal(String TaskName,
                              String Status,
                              String ColorsName,
                              String EmployeName,
-                             String EmpId,
+                             String AssignedToId,
                              String CreatedBy,
                              String CreatedName) {
 }

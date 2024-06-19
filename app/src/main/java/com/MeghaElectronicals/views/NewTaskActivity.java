@@ -121,6 +121,7 @@ public class NewTaskActivity extends AppCompatActivity {
         });
 
         ui.createNewTaskButton.setOnClickListener(v -> {
+            ui.createNewTaskButton.setEnabled(false);
             if (ui.task.getText() == null || ui.task.getText().toString().isBlank()) {
                 showDialog("Enter Task Name!");
                 return;
@@ -229,6 +230,7 @@ public class NewTaskActivity extends AppCompatActivity {
     }
 
     private void showError(Throwable error) {
+        ui.createNewTaskButton.setEnabled(true);
         if (!isDialogShown && error instanceof HttpException httpException) {
 
             Response<?> response = httpException.response();
