@@ -2,6 +2,7 @@ package com.MeghaElectronicals.notification;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +18,7 @@ import com.MeghaElectronicals.alarm.MyMediaPlayer;
 import com.MeghaElectronicals.alarm.SetAlarm;
 import com.MeghaElectronicals.common.MyFunctions;
 import com.MeghaElectronicals.common.MySharedPreference;
+import com.MeghaElectronicals.modal.LoginModal;
 import com.MeghaElectronicals.modal.TasksStatus;
 import com.MeghaElectronicals.retrofit.ServiceRepository;
 import com.MeghaElectronicals.views.StopAlarmActivity;
@@ -64,7 +66,7 @@ public class NotificationWorker extends Worker {
 
         Log.d("TasksStatus", "onSuccessResponse: " + status.toString());
 
-        if (status.Status().equalsIgnoreCase("Finished") || status.Status().equalsIgnoreCase("Rejected")) {
+        if (status.Status().equalsIgnoreCase(context.getString(R.string.finished)) || status.Status().equalsIgnoreCase(context.getString(R.string.cancel))) {
             new SetAlarm().removeAlarm(context, getInputData().getString("task"), getInputData().getString("desc"), Integer.parseInt(getInputData().getString("TaskId")));
         } else {
             try {
@@ -77,14 +79,18 @@ public class NotificationWorker extends Worker {
         String TaskName = status.TaskName();
         String Description = status.CompletionDescription() == null ? status.Description() : status.CompletionDescription();
 
-//        player.setVolume(1.0f, 1.0f);
-//        player.setLooping(true);
-//        player.start();
+        LoginModal loginModal = pref.fetchLogin();
+        boolean isCreatedByMe = loginModal.EmpId().equals(status.CreatedBy()) && status.Status().equalsIgnoreCase(context.getString(R.string.inprogress));
+        int alarm_type = loginModal.Role().equalsIgnoreCase("Director") ? R.raw.director_alarm
+                : isCreatedByMe ? R.raw.soft_alarm : R.raw.alarm_clock_old;
+        Uri uri = Uri.parse("android.resource://" + context.getPackageName() + "/" + alarm_type);
 
-        MyMediaPlayer.startPlayer(context);
+        MyMediaPlayer.startPlayer(context, uri, !isCreatedByMe);
         MyMediaPlayer.runWakeLock(context);
 
         NotificationService.sendNotification(context, TaskName, Description);
+
+        if (isCreatedByMe) return;
 
         Intent intent = new Intent(context, StopAlarmActivity.class);
         intent.putExtra("task", TaskName)
@@ -102,6 +108,7 @@ public class NotificationWorker extends Worker {
     private void onErrorResponse(Throwable throwable) {
         new Handler(Looper.getMainLooper()).post(() ->
                 Toast.makeText(context, "Couldn't play alarm!", Toast.LENGTH_SHORT).show());
+        Log.e("NotificationWorker", "onErrorResponse: "+throwable.toString());
     }
 
     @Override

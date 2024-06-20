@@ -124,30 +124,37 @@ public class NewTaskActivity extends AppCompatActivity {
             ui.createNewTaskButton.setEnabled(false);
             if (ui.task.getText() == null || ui.task.getText().toString().isBlank()) {
                 showDialog("Enter Task Name!");
+                ui.createNewTaskButton.setEnabled(true);
                 return;
             }
             if (ui.description.getText() == null || ui.description.getText().toString().isBlank()) {
                 showDialog("Enter Description!");
+                ui.createNewTaskButton.setEnabled(true);
                 return;
             }
             if (ui.department.getText() == null || ui.department.getText().toString().isBlank()) {
                 showDialog("Select Department!");
+                ui.createNewTaskButton.setEnabled(true);
                 return;
             }
             if (ui.employees.getText() == null || ui.employees.getText().toString().isBlank()) {
                 showDialog("Select Employees!");
+                ui.createNewTaskButton.setEnabled(true);
                 return;
             }
             if (ui.status.getText() == null || ui.status.getText().toString().isBlank()) {
                 showDialog("Select Status!");
+                ui.createNewTaskButton.setEnabled(true);
                 return;
             }
             if (ui.startDateButton.getText() == getString(R.string.select_start_date)) {
                 showDialog("Select Start Date and Time!");
+                ui.createNewTaskButton.setEnabled(true);
                 return;
             }
             if (!ui.startDateButton.getText().toString().contains(":")) {
                 showDialog("Select Start Time!");
+                ui.createNewTaskButton.setEnabled(true);
                 return;
             }
 

@@ -32,7 +32,7 @@ public class StopAlarmActivity extends AppCompatActivity {
         ui.descStopAlarm.setText(desc);
 
         ui.stopAlarmBtn.setOnClickListener(v -> {
-            MyMediaPlayer.stopPlayer(getApplicationContext());
+            MyMediaPlayer.stopPlayer();
             finish();
         });
     }

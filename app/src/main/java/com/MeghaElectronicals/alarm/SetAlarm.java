@@ -36,17 +36,27 @@ public class SetAlarm {
         intentAlarmReceiver.putExtra("TaskId", TaskId);
         intentAlarmReceiver.putExtra("dateToBeSet", dateToBeSet);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_MUTABLE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         // Calculate the difference between the specified time and the current time
+        // Getting START TIME
         long timeDifferenceMillis = getSpecifiedTimeMillis(dateToSet) - System.currentTimeMillis();
-        if (timeDifferenceMillis < 0)
-            timeDifferenceMillis = getSpecifiedTimeMillis(dateToBeSet) - System.currentTimeMillis();
+
         if (timeDifferenceMillis < 0) {
-            manager.cancel(pendingIntent);
-            return;
-        }
+            // START TIME is in past ∴ Getting END TIME
+            timeDifferenceMillis = getSpecifiedTimeMillis(dateToBeSet) - System.currentTimeMillis();
+
+            if (timeDifferenceMillis < 0) {
+                // START TIME and END TIME are both in past ∴ cancelling the alarm
+                manager.cancel(pendingIntent);
+                // TODO: set the status to Finished
+                Log.d(TAG, "setAlarm: CANCEL");
+                return;
+
+            } else Log.d(TAG, "setAlarm: END TIME");
+
+        } else Log.d(TAG, "setAlarm: START TIME");
 
         manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeDifferenceMillis, pendingIntent);
 

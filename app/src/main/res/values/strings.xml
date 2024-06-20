@@ -3,6 +3,13 @@
     <string name="channel_id">Buzzer</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
+
+    <!--    STATUS-->
+    <string name="inprogress">In-Progress</string>
+    <string name="finished">Finished</string>
+    <string name="cancel">Cancel</string>
+    <string name="completed">Completed</string>
+
     <string name="email">Email</string>
     <string name="select_start_date">Select Start Date and Time</string>
     <string name="title_activity_boarding_screens">BoardingScreensActivity</string>
@@ -97,9 +104,8 @@
     </string>
     <string name="action_settings">Settings</string>
     <string name="overlay_permission">This permission allows the app to display a stop button when the alarm starts playing, enabling you to stop the alarm easily.</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="notification_permission">This permission allows the app to send you notifications for assigned tasks, ensuring you never miss an important task.</string>
+
 </resources>
 
     <!--

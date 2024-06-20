@@ -53,8 +53,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:clickable="true"
-        android:focusable="true"
         app:cardBackgroundColor="@color/backgroundSecondary"
         app:cardCornerRadius="12dp"
         app:cardElevation="4dp"

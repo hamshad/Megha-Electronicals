@@ -3,7 +3,6 @@ package com.MeghaElectronicals.adapter;
 import static com.MeghaElectronicals.common.MyFunctions.convertDate;
 import static com.MeghaElectronicals.common.MyFunctions.nullCheck;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Spannable;
@@ -14,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -46,6 +44,30 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     }
 
     public void addTasksList(List<TasksListModal> newTasksList) {
+//        DiffUtil.Callback diffCallback = new DiffUtil.Callback() {
+//
+//            @Override
+//            public int getOldListSize() {
+//                return oldList.size();
+//            }
+//
+//            @Override
+//            public int getNewListSize() {
+//                return newList.size();
+//            }
+//
+//            @Override
+//            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+//                // Compare data
+//                return oldList.get(oldItemPosition).toString().equals(newList.get(newItemPosition).toString());
+//            }
+//
+//            @Override
+//            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+//                // Compare data
+//                return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
+//            }
+//        };
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffUtil(tasksList, newTasksList));
         tasksList.clear();
         tasksList.addAll(newTasksList);
@@ -60,46 +82,46 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 
     @Override
     public void onBindViewHolder(@NonNull TaskListViewHolder h, int position) {
+
+        String EmpId = new MySharedPreference(context).fetchLogin().EmpId();
+        String Role = new MySharedPreference(context).fetchLogin().Role();
+
         TasksListModal modal = tasksList.get(position);
 
         ui.employeeName.setText(nullCheck(modal.EmployeName()));
         ui.departmentName.setText(nullCheck(modal.Department()));
         ui.progress.setText(nullCheck(modal.Status()));
-        ui.assignedBy.setText(setColoredText("Assigned by: ", nullCheck(modal.CreatedName()), true));
+        ui.assignedBy.setText(setColoredText("Assigned by: ", nullCheck(modal.CreatedName()).equalsIgnoreCase(Role) ? "You" : modal.CreatedName(), true));
         ui.taskName.setText(nullCheck(modal.TaskName()));
         ui.taskDesc.setText(nullCheck(modal.Description()));
         ui.startDate.setText(setColoredText("Start\n", convertDate(nullCheck(modal.StartDate())), false));
         ui.endDate.setText(setColoredText("End\n", convertDate(nullCheck(modal.EndDate())), false));
 
-        if (!modal.Status().equalsIgnoreCase("In-Progress")) {
+        if (!modal.Status().equalsIgnoreCase(context.getString(R.string.inprogress))) {
             ui.completionDesc.setVisibility(View.VISIBLE);
             ui.completionDate.setVisibility(View.VISIBLE);
             ui.completionDesc.setText(setColoredText("Completion: ", modal.CompletionDescription(), true));
             ui.completionDate.setText(setColoredText("Completion\n", convertDate(modal.CompletionDate()), false));
         }
 
-        setColor(modal.ColorsName());
-        setImage(ui.statusImg, modal.ColorsName());
+        setAssetsAsStatus(modal.ColorsName());
 
-        String EmpId = new MySharedPreference(context).fetchLogin().EmpId();
+        Log.d("TAG", "onBindViewHolder: " + modal.AssignedToId() + " --- " + EmpId);
+        Log.d("TAG", "onBindViewHolder: " + modal.CreatedBy());
 
-        Log.d("TAG", "onBindViewHolder: "+modal.AssignedToId() + " --- " + EmpId);
-        Log.d("TAG", "onBindViewHolder: "+modal.CreatedBy());
+        boolean isClickable = (EmpId.equals(modal.CreatedBy()) || EmpId.equals(modal.AssignedToId()))
+                && modal.Status().equalsIgnoreCase(context.getString(R.string.inprogress));
 
-        if ((EmpId.equals(modal.CreatedBy()) || EmpId.equals(modal.AssignedToId())) && modal.Status().equalsIgnoreCase("In-Progress")) {
-            ui.updateTaskBtn.setVisibility(View.VISIBLE);
-            ui.materialCardView.setOnClickListener(v -> {
+        // TODO: see if DiffCallback is working and set material card not clickable
+        ui.updateTaskBtn.setVisibility(isClickable ? View.VISIBLE : View.GONE);
+        ui.materialCardView.setOnClickListener(isClickable ? v -> {
 //                activity.openBottomSheet();
-                if (!UpdateTaskDialogFragment.isBottomSheetUp) {
-                    UpdateTaskDialogFragment updateTaskDialog = UpdateTaskDialogFragment.newInstance(modal.TaskName(), modal.TaskId());
-                    updateTaskDialog.show(activity.getSupportFragmentManager(), "UpdateTaskDialogFragment");
-                }
-            });
-        } else {
-            ui.updateTaskBtn.setVisibility(View.GONE);
-            ui.materialCardView.setClickable(false);
-            ui.materialCardView.setFocusable(false);
-        }
+            if (!UpdateTaskDialogFragment.isBottomSheetUp) {
+                UpdateTaskDialogFragment updateTaskDialog = UpdateTaskDialogFragment.newInstance(modal.TaskName(), modal.TaskId());
+                updateTaskDialog.show(activity.getSupportFragmentManager(), "UpdateTaskDialogFragment");
+            }
+        } : v -> {});
+        ui.materialCardView.setFocusable(isClickable);
 
 //        try {
 //            float progress = getProgress(modal);
@@ -125,33 +147,35 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 //        return (float) (diffCurrent / diffDate * 100) / 10;
 //    }
 
-    private void setColor(String s) {
-        @SuppressLint("DiscouragedApi") int colorId = context.getResources().getIdentifier(s, "color", context.getPackageName());
-        int color = ContextCompat.getColor(context, colorId);
+    private void setAssetsAsStatus(String s) {
+        int color = switch (s) {
+            case "Red", "RED" -> {
+                ui.statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.hot));
+                yield ContextCompat.getColor(context, R.color.RED);
+            }
+            case "Blue" -> {
+                ui.statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.cold));
+                yield ContextCompat.getColor(context, R.color.Blue);
+            }
+            case "Yellow" -> {
+                ui.statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.warm));
+                yield ContextCompat.getColor(context, R.color.Yellow);
+            }
+            case "Green" -> {
+                ui.statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.chilled));
+                yield ContextCompat.getColor(context, R.color.Green);
+            }
+            default -> {
+                ui.statusImg.setVisibility(View.GONE);
+                yield ContextCompat.getColor(context, R.color.White);
+            }
+        };
+
         ui.materialCardView.setStrokeColor(color);
         ui.progressCard.setCardBackgroundColor(color);
 //        ui.view.setBackgroundTintList(ColorStateList.valueOf(color));
 //        ui.employeeName.setTextColor(Color.parseColor(s));
 //        ui.departmentName.setTextColor(Color.parseColor(s));
-    }
-
-    private void setImage(ImageView statusImg, String s) {
-        switch (s) {
-            case "RED":
-                statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.hot));
-                break;
-            case "Blue":
-                statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.cold));
-                break;
-            case "Yellow":
-                statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.warm));
-                break;
-            case "Green":
-                statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.chilled));
-                break;
-            default:
-                statusImg.setVisibility(View.GONE);
-        }
     }
 
     public SpannableString setColoredText(String prefix, String content, boolean setItalic) {
@@ -160,7 +184,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         SpannableString spannableString = new SpannableString(fullText);
         int color = ContextCompat.getColor(context, R.color.tertiary);
         spannableString.setSpan(new ForegroundColorSpan(color), 0, prefix.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        if (setItalic) spannableString.setSpan(new StyleSpan(Typeface.ITALIC), 0, prefix.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (setItalic)
+            spannableString.setSpan(new StyleSpan(Typeface.ITALIC), 0, prefix.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableString;
     }
 
@@ -196,7 +221,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            // Compare unique TaskIds
+            // Compare data
             return oldList.get(oldItemPosition).toString().equals(newList.get(newItemPosition).toString());
         }
 
