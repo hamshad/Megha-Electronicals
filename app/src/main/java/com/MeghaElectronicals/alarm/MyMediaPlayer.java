@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,15 +21,22 @@ public class MyMediaPlayer {
 
     private static Ringtone ringtone = null;
 
-    private static PowerManager powerManager = null;
-    private static PowerManager.WakeLock wakeLock = null;
 
-    public static void runWakeLock(Context context) {
-        if (powerManager == null || wakeLock == null) {
-            powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MeghaElectronicals::WakeLock");
-        }
-        wakeLock.acquire(30 * 1000L /*30 Seconds*/);
+    public static Runnable runWakeLock(Context context) {
+        //WIFI LOCK
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager.WifiLock wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF , "MeghaElectronicals::WakeLock");
+        wifiLock.acquire();
+
+        //WAKE LOCK
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MeghaElectronicals::WakeLock");
+        wakeLock.acquire(60*1000L /*1 minutes*/);
+
+        return () -> {
+            wifiLock.release();
+            wakeLock.release();
+        };
     }
 
     public static void startPlayer(Context context, Uri uri, boolean setOnLoop) {
@@ -50,6 +58,14 @@ public class MyMediaPlayer {
                 player.setDataSource(context, uri);
                 player.setOnPreparedListener(mp -> player.start());
                 player.prepareAsync();  // Use asynchronous prepare
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(60 * 1000);
+                    } catch (InterruptedException e) {
+                        e.fillInStackTrace();
+                    }
+                    stopPlayer();
+                }).start();
             } catch (Exception e) {
                 e.fillInStackTrace();
                 Toast.makeText(context, "Couldn't play the audio!", Toast.LENGTH_SHORT).show();

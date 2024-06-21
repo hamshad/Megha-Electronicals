@@ -18,10 +18,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        String dateToBeSet = intent.getStringExtra("dateToBeSet");
+        boolean keepSettingAlarm = intent.getBooleanExtra("keepSettingAlarm", true);
 
-        if (dateToBeSet != null && !dateToBeSet.isBlank()) {
-            Log.d("SetAlarm", "onReceive: "+dateToBeSet);
+        if (keepSettingAlarm) {
+            Log.d("SetAlarm", "keepSettingAlarm: "+keepSettingAlarm);
         }
 
         Data.Builder dataBuild = new Data.Builder();

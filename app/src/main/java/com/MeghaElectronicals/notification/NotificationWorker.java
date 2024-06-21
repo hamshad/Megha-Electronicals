@@ -26,6 +26,7 @@ import com.MeghaElectronicals.views.StopAlarmActivity;
 import java.text.ParseException;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -52,12 +53,20 @@ public class NotificationWorker extends Worker {
     public Result doWork() {
         Log.d("Work Manager", "doWork: Work Manager Executed");
 
+        Runnable releaseWakeLock = MyMediaPlayer.runWakeLock(context);
+
         disposable.add(
                 repo.getTasksStatus(getInputData().getString("TaskId"))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
+                        .retryWhen(error -> {
+                            Log.d("NotificationWorker", "doWork: retrying the TaskStatus api!");
+                            return error.flatMap(throwable -> Flowable.just(new Object()));
+                        })
                         .subscribe(this::onSuccessResponse, this::onErrorResponse)
         );
+
+        releaseWakeLock.run();
 
         return Result.success();
     }
@@ -70,7 +79,7 @@ public class NotificationWorker extends Worker {
             new SetAlarm().removeAlarm(context, getInputData().getString("task"), getInputData().getString("desc"), Integer.parseInt(getInputData().getString("TaskId")));
         } else {
             try {
-                new SetAlarm().setAlarm(context, getInputData().getString("task"), getInputData().getString("desc"), Integer.parseInt(getInputData().getString("TaskId")), status.StartDate(), status.EndDate());
+                new SetAlarm().setAlarm(context, getInputData().getString("task"), getInputData().getString("desc"), Integer.parseInt(getInputData().getString("TaskId")), status.StartDate(), status.EndDate(), MyFunctions.isInFuture(status.EndDate()));
             } catch (ParseException e) {
                 e.fillInStackTrace();
             }
@@ -80,13 +89,12 @@ public class NotificationWorker extends Worker {
         String Description = status.CompletionDescription() == null ? status.Description() : status.CompletionDescription();
 
         LoginModal loginModal = pref.fetchLogin();
-        boolean isCreatedByMe = loginModal.EmpId().equals(status.CreatedBy()) && status.Status().equalsIgnoreCase(context.getString(R.string.inprogress));
+        boolean isCreatedByMe = loginModal.EmpId().equals(status.CreatedBy()) && MyFunctions.isInFuture(status.StartDate());
         int alarm_type = loginModal.Role().equalsIgnoreCase("Director") ? R.raw.director_alarm
                 : isCreatedByMe ? R.raw.soft_alarm : R.raw.alarm_clock_old;
         Uri uri = Uri.parse("android.resource://" + context.getPackageName() + "/" + alarm_type);
 
         MyMediaPlayer.startPlayer(context, uri, !isCreatedByMe);
-        MyMediaPlayer.runWakeLock(context);
 
         NotificationService.sendNotification(context, TaskName, Description);
 

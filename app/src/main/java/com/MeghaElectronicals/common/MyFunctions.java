@@ -1,7 +1,7 @@
 package com.MeghaElectronicals.common;
 
-import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -10,6 +10,8 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -39,11 +41,10 @@ public class MyFunctions {
      * @param format
      * @return String
      */
-    @SuppressLint("SimpleDateFormat")
     public static String getDate(String yyyyMMdd, String format) {
         Date date = Calendar.getInstance().getTime();
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(yyyyMMdd);
+            date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(yyyyMMdd);
         } catch (ParseException e) {
             e.fillInStackTrace();
         }
@@ -84,6 +85,28 @@ public class MyFunctions {
         ActivityManager.RunningAppProcessInfo appProcessInfo = new ActivityManager.RunningAppProcessInfo();
         ActivityManager.getMyMemoryState(appProcessInfo);
         return (appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND || appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE);
+    }
+
+    /**
+     *
+     * @param dateString the date in yyyy-MM-ddTHH:mm:ss format
+     * @return boolean: true if the date is in future or false
+     */
+    public static boolean isInFuture(String dateString) {
+
+        // Format the given date string to LocalDateTime
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        LocalDateTime givenDate = LocalDateTime.parse(dateString, formatter);
+
+        // Get the current date and time
+        LocalDateTime currentDate = LocalDateTime.now();
+
+        // Compare the dates
+        boolean isFuture = givenDate.isAfter(currentDate);
+
+        // Print the result
+        Log.d("isInFuture", "Is the given date in the future? " + isFuture);
+        return isFuture;
     }
 
 }

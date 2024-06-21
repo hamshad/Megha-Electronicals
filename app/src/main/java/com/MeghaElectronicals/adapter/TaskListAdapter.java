@@ -31,9 +31,6 @@ import java.util.List;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskListViewHolder> {
 
-    protected TaskListItemBinding ui;
-    private List<TasksListModal> oldList;
-    private List<TasksListModal> newList;
     private final List<TasksListModal> tasksList = new ArrayList<>();
     private final Context context;
     private final MainActivity activity;
@@ -44,6 +41,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     }
 
     public void addTasksList(List<TasksListModal> newTasksList) {
+        Log.d("TaskListAdapterTaskListAdapter", "addTasksList");
+        // Doesn't work like this
 //        DiffUtil.Callback diffCallback = new DiffUtil.Callback() {
 //
 //            @Override
@@ -68,6 +67,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 //                return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
 //            }
 //        };
+//        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffUtil(tasksList, newTasksList));
         tasksList.clear();
         tasksList.addAll(newTasksList);
@@ -88,45 +89,53 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 
         TasksListModal modal = tasksList.get(position);
 
-        ui.employeeName.setText(nullCheck(modal.EmployeName()));
-        ui.departmentName.setText(nullCheck(modal.Department()));
-        ui.progress.setText(nullCheck(modal.Status()));
-        ui.assignedBy.setText(setColoredText("Assigned by: ", nullCheck(modal.CreatedName()).equalsIgnoreCase(Role) ? "You" : modal.CreatedName(), true));
-        ui.taskName.setText(nullCheck(modal.TaskName()));
-        ui.taskDesc.setText(nullCheck(modal.Description()));
-        ui.startDate.setText(setColoredText("Start\n", convertDate(nullCheck(modal.StartDate())), false));
-        ui.endDate.setText(setColoredText("End\n", convertDate(nullCheck(modal.EndDate())), false));
+        h.ui.employeeName.setText(nullCheck(modal.EmployeName()));
+        h.ui.departmentName.setText(nullCheck(modal.Department()));
+        h.ui.progress.setText(nullCheck(modal.Status()));
+        h.ui.assignedBy.setText(setColoredText("Assigned by: ", nullCheck(modal.CreatedName()).equalsIgnoreCase(Role) ? "You" : modal.CreatedName(), true));
+        h.ui.taskName.setText(nullCheck(modal.TaskName()));
+        h.ui.taskDesc.setText(nullCheck(modal.Description()));
+        h.ui.startDate.setText(setColoredText("Start\n", convertDate(nullCheck(modal.StartDate())), false));
+        h.ui.endDate.setText(setColoredText("End\n", convertDate(nullCheck(modal.EndDate())), false));
 
         if (!modal.Status().equalsIgnoreCase(context.getString(R.string.inprogress))) {
-            ui.completionDesc.setVisibility(View.VISIBLE);
-            ui.completionDate.setVisibility(View.VISIBLE);
-            ui.completionDesc.setText(setColoredText("Completion: ", modal.CompletionDescription(), true));
-            ui.completionDate.setText(setColoredText("Completion\n", convertDate(modal.CompletionDate()), false));
+            h.ui.completionDesc.setVisibility(View.VISIBLE);
+            h.ui.completionDate.setVisibility(View.VISIBLE);
+            h.ui.completionDesc.setText(setColoredText("Completion: ", modal.CompletionDescription(), true));
+            h.ui.completionDate.setText(setColoredText("Completion\n", convertDate(modal.CompletionDate()), false));
         }
 
-        setAssetsAsStatus(modal.ColorsName());
+        setStyleAsStatus(h.ui, modal.ColorsName());
 
-        Log.d("TAG", "onBindViewHolder: " + modal.AssignedToId() + " --- " + EmpId);
-        Log.d("TAG", "onBindViewHolder: " + modal.CreatedBy());
+//        Log.d("TAG", "onBindViewHolder: " + modal.AssignedToId() + " --- " + EmpId);
+//        Log.d("TAG", "onBindViewHolder: " + modal.CreatedBy());
 
         boolean isClickable = (EmpId.equals(modal.CreatedBy()) || EmpId.equals(modal.AssignedToId()))
                 && modal.Status().equalsIgnoreCase(context.getString(R.string.inprogress));
 
         // TODO: see if DiffCallback is working and set material card not clickable
-        ui.updateTaskBtn.setVisibility(isClickable ? View.VISIBLE : View.GONE);
-        ui.materialCardView.setOnClickListener(isClickable ? v -> {
+        if (isClickable) {
+            h.ui.updateTaskBtn.setVisibility(View.VISIBLE);
+            h.ui.taskItemClick.setOnClickListener(v -> {
 //                activity.openBottomSheet();
-            if (!UpdateTaskDialogFragment.isBottomSheetUp) {
-                UpdateTaskDialogFragment updateTaskDialog = UpdateTaskDialogFragment.newInstance(modal.TaskName(), modal.TaskId());
-                updateTaskDialog.show(activity.getSupportFragmentManager(), "UpdateTaskDialogFragment");
-            }
-        } : v -> {});
-        ui.materialCardView.setFocusable(isClickable);
+                if (!UpdateTaskDialogFragment.isBottomSheetUp) {
+                    UpdateTaskDialogFragment updateTaskDialog = UpdateTaskDialogFragment.newInstance(modal.TaskName(), modal.TaskId());
+                    updateTaskDialog.show(activity.getSupportFragmentManager(), "UpdateTaskDialogFragment");
+                }
+            });
+            h.ui.taskItemClick.setClickable(true);
+            h.ui.taskItemClick.setFocusable(true);
+        } else {
+            h.ui.updateTaskBtn.setVisibility(View.GONE);
+            h.ui.taskItemClick.setOnClickListener(null);
+            h.ui.taskItemClick.setClickable(false);
+            h.ui.taskItemClick.setFocusable(false);
+        }
 
 //        try {
 //            float progress = getProgress(modal);
-//            h.ui.progressBar.setProgressCompat((int) progress, true);
-//            h.ui.progressText.setText(String.valueOf(progress).concat("%"));
+//            h.h.ui.progressBar.setProgressCompat((int) progress, true);
+//            h.h.ui.progressText.setText(String.valueOf(progress).concat("%"));
 //        } catch (Exception e) {
 //            e.fillInStackTrace();
 //        }
@@ -147,7 +156,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 //        return (float) (diffCurrent / diffDate * 100) / 10;
 //    }
 
-    private void setAssetsAsStatus(String s) {
+    private void setStyleAsStatus(TaskListItemBinding ui, String s) {
         int color = switch (s) {
             case "Red", "RED" -> {
                 ui.statusImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.hot));
@@ -173,9 +182,9 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 
         ui.materialCardView.setStrokeColor(color);
         ui.progressCard.setCardBackgroundColor(color);
-//        ui.view.setBackgroundTintList(ColorStateList.valueOf(color));
-//        ui.employeeName.setTextColor(Color.parseColor(s));
-//        ui.departmentName.setTextColor(Color.parseColor(s));
+//        h.ui.view.setBackgroundTintList(ColorStateList.valueOf(color));
+//        h.ui.employeeName.setTextColor(Color.parseColor(s));
+//        h.ui.departmentName.setTextColor(Color.parseColor(s));
     }
 
     public SpannableString setColoredText(String prefix, String content, boolean setItalic) {
@@ -194,19 +203,24 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         return tasksList.size();
     }
 
-    public class TaskListViewHolder extends RecyclerView.ViewHolder {
+    public static class TaskListViewHolder extends RecyclerView.ViewHolder {
+
+        protected TaskListItemBinding ui;
 
         public TaskListViewHolder(@NonNull TaskListItemBinding ui) {
             super(ui.getRoot());
-            TaskListAdapter.this.ui = ui;
+            this.ui = ui;
         }
     }
 
-    private class MyDiffUtil extends DiffUtil.Callback {
+    private static class MyDiffUtil extends DiffUtil.Callback {
+
+        private final List<TasksListModal> oldList;
+        private final List<TasksListModal> newList;
 
         public MyDiffUtil(List<TasksListModal> oldList, List<TasksListModal> newList) {
-            TaskListAdapter.this.oldList = oldList;
-            TaskListAdapter.this.newList = newList;
+            this.oldList = oldList;
+            this.newList = newList;
         }
 
         @Override

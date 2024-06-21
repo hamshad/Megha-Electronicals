@@ -71,9 +71,7 @@ public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ui = FragmentUpdateTaskDialogBinding.inflate(inflater);
 
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int screenHeight = displayMetrics.heightPixels;
-        ui.getRoot().setMinimumHeight(screenHeight);
+        scrollableOn();
 
         ui.backButton.setOnClickListener(v -> UpdateTaskDialogFragment.this.dismiss());
 
@@ -83,6 +81,12 @@ public class UpdateTaskDialogFragment extends BottomSheetDialogFragment {
         ui.createNewTaskButton.setOnClickListener(v -> updateTask());
 
         return ui.getRoot();
+    }
+
+    public void scrollableOn() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int screenHeight = displayMetrics.heightPixels;
+        ui.getRoot().setMinimumHeight(screenHeight);
     }
 
     private void updateTask() {

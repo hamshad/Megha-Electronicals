@@ -28,16 +28,16 @@ public class SetAlarm {
      * @param TaskId    Task Id
      * @param dateToSet Date to Set <i>[ yyyy-MM-dd HH:mm:ss ]</i>
      */
-    public void setAlarm(Context context, String task, String desc, int TaskId, String dateToSet, String dateToBeSet) throws ParseException {
+    public void setAlarm(Context context, String task, String desc, int TaskId, String dateToSet, String dateToBeSet, boolean keepSettingAlarm) throws ParseException {
+
+        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         Intent intentAlarmReceiver = new Intent(context, AlarmReceiver.class);
         intentAlarmReceiver.putExtra("task", task);
         intentAlarmReceiver.putExtra("desc", desc);
         intentAlarmReceiver.putExtra("TaskId", TaskId);
-        intentAlarmReceiver.putExtra("dateToBeSet", dateToBeSet);
-
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        intentAlarmReceiver.putExtra("keepSettingAlarm", keepSettingAlarm);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
 
         // Calculate the difference between the specified time and the current time
         // Getting START TIME
@@ -74,7 +74,7 @@ public class SetAlarm {
         intentAlarmReceiver.putExtra("TaskId", TaskId);
         intentAlarmReceiver.putExtra("dateToBeSet", "");
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_MUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         manager.cancel(pendingIntent);
