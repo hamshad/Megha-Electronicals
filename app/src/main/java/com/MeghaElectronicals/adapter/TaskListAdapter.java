@@ -113,7 +113,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         boolean isClickable = (EmpId.equals(modal.CreatedBy()) || EmpId.equals(modal.AssignedToId()))
                 && modal.Status().equalsIgnoreCase(context.getString(R.string.inprogress));
 
-        // TODO: see if DiffCallback is working and set material card not clickable
+        // DONE: see if DiffCallback is working and set material card not clickable
         if (isClickable) {
             h.ui.updateTaskBtn.setVisibility(View.VISIBLE);
             h.ui.taskItemClick.setOnClickListener(v -> {
