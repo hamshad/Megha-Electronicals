@@ -37,6 +37,7 @@ public class SetAlarm {
         intentAlarmReceiver.putExtra("desc", desc);
         intentAlarmReceiver.putExtra("TaskId", TaskId);
         intentAlarmReceiver.putExtra("keepSettingAlarm", keepSettingAlarm);
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
 
         // Calculate the difference between the specified time and the current time
@@ -68,14 +69,15 @@ public class SetAlarm {
 
     public void removeAlarm(Context context, String task, String desc, int TaskId) {
 
+        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
         Intent intentAlarmReceiver = new Intent(context, AlarmReceiver.class);
         intentAlarmReceiver.putExtra("task", task);
         intentAlarmReceiver.putExtra("desc", desc);
         intentAlarmReceiver.putExtra("TaskId", TaskId);
-        intentAlarmReceiver.putExtra("dateToBeSet", "");
+        intentAlarmReceiver.putExtra("keepSettingAlarm", false);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TaskId, intentAlarmReceiver, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         manager.cancel(pendingIntent);
         Log.d(TAG, "removeAlarm: " + TaskId + ": is cancelled");

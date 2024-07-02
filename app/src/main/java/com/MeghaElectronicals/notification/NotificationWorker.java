@@ -89,9 +89,10 @@ public class NotificationWorker extends Worker {
         String Description = status.CompletionDescription() == null ? status.Description() : status.CompletionDescription();
 
         LoginModal loginModal = pref.fetchLogin();
+        Log.d("isCreatedByMe", "onSuccessResponse: "+loginModal.EmpId().equals(status.CreatedBy()));
         boolean isCreatedByMe = loginModal.EmpId().equals(status.CreatedBy()) && MyFunctions.isInFuture(status.StartDate());
         int alarm_type = loginModal.Role().equalsIgnoreCase("Director") ? R.raw.director_alarm
-                : isCreatedByMe ? R.raw.soft_alarm : R.raw.alarm_clock_old;
+                : isCreatedByMe ? R.raw.soft_alarm : R.raw.alarm_ringtone;
         Uri uri = Uri.parse("android.resource://" + context.getPackageName() + "/" + alarm_type);
 
         MyMediaPlayer.startPlayer(context, uri, !isCreatedByMe);

@@ -84,7 +84,7 @@ public class MyMediaPlayer {
 
     public static void startRingtone(Context context) {
         if (ringtone == null) {
-            Uri uri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alarm_clock_old);
+            Uri uri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alarm_ringtone);
             ringtone = RingtoneManager.getRingtone(context, uri);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) ringtone.setLooping(true);
