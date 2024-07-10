@@ -9,8 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitInstance {
 
-//    public static final String BASE_URL = "https://tasks.mokshasolutions.com/";
-    public static final String BASE_URL = "http://192.168.1.14:8040/";
+    public static final String BASE_URL = "https://tasks.mokshasolutions.com/";
+//    public static final String BASE_URL = "http://192.168.1.14:8040/";
 
     static Retrofit retrofit;
 

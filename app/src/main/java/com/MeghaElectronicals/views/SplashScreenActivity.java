@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.MeghaElectronicals.R;
 import com.MeghaElectronicals.common.MySharedPreference;
 import com.MeghaElectronicals.databinding.ActivitySplashScreenBinding;
+import com.MeghaElectronicals.network.NetworkUtil;
 import com.MeghaElectronicals.views.BoardingScreens.BoardingScreensActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -49,13 +50,16 @@ public class SplashScreenActivity extends AppCompatActivity {
 //        );
 //        pref.saveLogin(modal.toJsonString());
 
-        Executors.newSingleThreadExecutor().execute(() -> FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-            @Override
-            public void onComplete(@NonNull Task<String> task) {
-                Log.d(TAG, "onComplete: " + task.getResult());
-                pref.saveToken(task.getResult());
-            }
-        }));
+        if(!NetworkUtil.isConnected(this)) {
+            Log.d(TAG, "onCreate: HAHAHAHAHAHHAHAHAHAHHAHAAHAHAHAHAHAH");
+            Executors.newSingleThreadExecutor().execute(() -> FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+                @Override
+                public void onComplete(@NonNull Task<String> task) {
+                    Log.d(TAG, "onComplete: " + task.getResult());
+                    pref.saveToken(task.getResult());
+                }
+            }));
+        }
 
         char[] app_name = getResources().getString(R.string.app_name).toCharArray();
         int DELAY_ANIMATION = 200;
